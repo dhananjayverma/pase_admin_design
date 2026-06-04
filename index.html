@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chandigarh University Admin Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="navbar.css" />
+  </head>
+  <body>
+    <!-- Reusable SVG icon set used across the dashboard. -->
+    <svg class="icon-sprite" aria-hidden="true">
+      <symbol id="icon-home" viewBox="0 0 24 24">
+        <path d="M3 10.8 12 3l9 7.8v8.4A1.8 1.8 0 0 1 19.2 21H15v-6H9v6H4.8A1.8 1.8 0 0 1 3 19.2v-8.4Z" />
+      </symbol>
+      <symbol id="icon-grid" viewBox="0 0 24 24">
+        <path d="M4 4h6v6H4V4Zm10 0h6v6h-6V4ZM4 14h6v6H4v-6Zm10 0h6v6h-6v-6Z" />
+      </symbol>
+      <symbol id="icon-bank" viewBox="0 0 24 24">
+        <path d="M3 21h18M5 10h14M6 10v8m4-8v8m4-8v8m4-8v8M4 8l8-5 8 5H4Z" />
+      </symbol>
+      <symbol id="icon-book" viewBox="0 0 24 24">
+        <path d="M4 5.4A2.4 2.4 0 0 1 6.4 3H20v16H7.2A3.2 3.2 0 0 0 4 22V5.4Zm0 0A2.6 2.6 0 0 0 6.6 8H20" />
+      </symbol>
+      <symbol id="icon-clipboard" viewBox="0 0 24 24">
+        <path d="M9 5h6m-7 0a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2Zm1 8 2 2 4-5" />
+      </symbol>
+      <symbol id="icon-chart" viewBox="0 0 24 24">
+        <path d="M4 20V4m0 16h16M8 17v-6m4 6V7m4 10v-9m4 9v-4" />
+      </symbol>
+      <symbol id="icon-users" viewBox="0 0 24 24">
+        <path d="M16 19a4 4 0 0 0-8 0M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a3 3 0 0 0-4-2.83M17 4.2a3 3 0 0 1 0 5.6M5 19a3 3 0 0 1 4-2.83M7 4.2a3 3 0 0 0 0 5.6" />
+      </symbol>
+      <symbol id="icon-settings" viewBox="0 0 24 24">
+        <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Zm8.2-3.2a7.7 7.7 0 0 0-.1-1.1l2-1.5-2-3.5-2.4 1a8 8 0 0 0-1.9-1.1L15.5 3h-4l-.4 2.8a8 8 0 0 0-1.9 1.1l-2.4-1-2 3.5 2 1.5a7.7 7.7 0 0 0 0 2.2l-2 1.5 2 3.5 2.4-1a8 8 0 0 0 1.9 1.1l.4 2.8h4l.4-2.8a8 8 0 0 0 1.9-1.1l2.4 1 2-3.5-2-1.5c.1-.4.1-.7.1-1.1Z" />
+      </symbol>
+      <symbol id="icon-bell" viewBox="0 0 24 24">
+        <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" />
+      </symbol>
+      <symbol id="icon-search" viewBox="0 0 24 24">
+        <path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" />
+      </symbol>
+      <symbol id="icon-calendar" viewBox="0 0 24 24">
+        <path d="M7 3v4m10-4v4M4 9h16M6 5h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm3 8h2m4 0h2m-8 4h2m4 0h2" />
+      </symbol>
+      <symbol id="icon-clock" viewBox="0 0 24 24">
+        <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0-14v5l3 2" />
+      </symbol>
+      <symbol id="icon-cap" viewBox="0 0 24 24">
+        <path d="m3 8 9-5 9 5-9 5-9-5Zm4 3.2V16c2.5 2 7.5 2 10 0v-4.8M21 8v6" />
+      </symbol>
+      <symbol id="icon-file" viewBox="0 0 24 24">
+        <path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9l-6-6Zm0 0v6h6M8 13h8M8 17h6" />
+      </symbol>
+      <symbol id="icon-presentation" viewBox="0 0 24 24">
+        <path d="M4 4h16v11H4V4Zm8 11v5m-4 0h8M8 8h8m-8 4h5" />
+      </symbol>
+      <symbol id="icon-forum" viewBox="0 0 24 24">
+        <path d="M5 5h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" />
+      </symbol>
+      <symbol id="icon-percent" viewBox="0 0 24 24">
+        <path d="m19 5-14 14M7.5 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm9 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+      </symbol>
+      <symbol id="icon-flask" viewBox="0 0 24 24">
+        <path d="M9 3h6M10 3v6l-5.5 9.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3M8 15h8" />
+      </symbol>
+      <symbol id="icon-scale" viewBox="0 0 24 24">
+        <path d="M12 3v18M5 6h14M6 6l-4 7h8L6 6Zm12 0-4 7h8l-4-7ZM8 21h8" />
+      </symbol>
+      <symbol id="icon-camera" viewBox="0 0 24 24">
+        <path d="M4 8h4l1.5-2h5L16 8h4a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2Zm8 9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
+      </symbol>
+      <symbol id="icon-building" viewBox="0 0 24 24">
+        <path d="M4 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16M8 7h2m2 0h2M8 11h2m2 0h2M8 15h2m2 0h2m4-5h2a2 2 0 0 1 2 2v9M3 21h18" />
+      </symbol>
+      <symbol id="icon-sun" viewBox="0 0 24 24">
+        <path d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.4-6.4-1.4 1.4M7 17l-1.4 1.4m12.8 0L17 17M7 7 5.6 5.6M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
+      </symbol>
+      <symbol id="icon-moon" viewBox="0 0 24 24">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      </symbol>
+      <symbol id="icon-message" viewBox="0 0 24 24">
+        <path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" />
+      </symbol>
+      <symbol id="icon-database" viewBox="0 0 24 24">
+        <path d="M5 6c0-1.7 3.1-3 7-3s7 1.3 7 3-3.1 3-7 3-7-1.3-7-3Zm0 0v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6" />
+      </symbol>
+    </svg>
+
+    <div class="app-shell">
+      <div id="navbarMount"></div>
+
+      <main class="dashboard">
+        <!-- Welcome hero with campus artwork and date card. -->
+        <section class="welcome-panel">
+          <div>
+            <h1>Welcome back, Admin! <span aria-hidden="true">👋</span></h1>
+            <p>Here's the overall overview of Chandigarh University.</p>
+          </div>
+          <div class="campus-strip" role="img" aria-label="Campus skyline illustration"></div>
+          <div class="date-card">
+            <svg><use href="#icon-calendar"></use></svg>
+            <span><strong>20 May 2025</strong><small>Tuesday</small></span>
+          </div>
+        </section>
+
+        <section class="filter-bar" aria-label="Dashboard filters">
+          <label class="filter-field">
+            <span class="filter-icon"><svg><use href="#icon-grid"></use></svg></span>
+            <span class="filter-copy"><span>Cluster</span></span>
+            <select id="clusterFilter">
+              <option>All Clusters</option>
+            </select>
+          </label>
+          <label class="filter-field">
+            <span class="filter-icon"><svg><use href="#icon-cap"></use></svg></span>
+            <span class="filter-copy"><span>Faculty / School</span></span>
+            <select id="schoolFilter">
+              <option>All Schools</option>
+            </select>
+          </label>
+          <label class="filter-field">
+            <span class="filter-icon"><svg><use href="#icon-building"></use></svg></span>
+            <span class="filter-copy"><span>Institute</span></span>
+            <select id="instituteFilter">
+              <option>All Institutes</option>
+            </select>
+          </label>
+          <label class="filter-field">
+            <span class="filter-icon"><svg><use href="#icon-bank"></use></svg></span>
+            <span class="filter-copy"><span>Department</span></span>
+            <select id="departmentFilter">
+              <option>All Depts</option>
+            </select>
+          </label>
+          <label class="filter-field">
+            <span class="filter-icon"><svg><use href="#icon-book"></use></svg></span>
+            <span class="filter-copy"><span>Program</span></span>
+            <select id="programFilter">
+              <option>All Programs</option>
+            </select>
+          </label>
+          <label class="filter-field">
+            <span class="filter-icon"><svg><use href="#icon-users"></use></svg></span>
+            <span class="filter-copy"><span>Faculty</span></span>
+            <select id="facultyFilter">
+              <option>All Faculty</option>
+            </select>
+          </label>
+          <label class="filter-field">
+            <span class="filter-icon"><svg><use href="#icon-settings"></use></svg></span>
+            <span class="filter-copy"><span>Unit</span></span>
+            <select id="unitFilter">
+              <option>All Units</option>
+            </select>
+          </label>
+          <div class="filter-date-pair">
+            <label class="filter-field date-field">
+              <span class="filter-copy"><span>From</span></span>
+              <input id="fromFilter" type="date" aria-label="From date" />
+              <span class="date-icon"><svg><use href="#icon-calendar"></use></svg></span>
+            </label>
+            <label class="filter-field date-field">
+              <span class="filter-copy"><span>To</span></span>
+              <input id="toFilter" type="date" aria-label="To date" />
+              <span class="date-icon"><svg><use href="#icon-calendar"></use></svg></span>
+            </label>
+          </div>
+          <div class="active-filter-row" aria-live="polite">
+            <div class="active-filter-list">
+              <span class="active-filter-label">Active filters:</span>
+              <div class="active-filter-chips" id="activeFilterChips"></div>
+            </div>
+            <button class="filter-reset" id="resetFilters" type="button">
+              <span aria-hidden="true">↻</span>
+              Reset all
+            </button>
+          </div>
+        </section>
+
+        <div class="metrics-board" aria-label="Dashboard statistics">
+          <section class="content-metrics" aria-label="Content summary">
+            <article class="content-metric blue">
+              <span class="content-metric-icon"><svg><use href="#icon-file"></use></svg></span>
+              <p>Pages</p>
+              <strong>1,237</strong>
+            </article>
+            <article class="content-metric purple">
+              <span class="content-metric-icon"><svg><use href="#icon-presentation"></use></svg></span>
+              <p>PPTs</p>
+              <strong>1,673</strong>
+            </article>
+            <article class="content-metric orange">
+              <span class="content-metric-icon"><svg><use href="#icon-forum"></use></svg></span>
+              <p>Forums</p>
+              <strong>1,617</strong>
+            </article>
+            <article class="content-metric amber">
+              <span class="content-metric-icon"><svg><use href="#icon-flask"></use></svg></span>
+              <p>Lab Manuals</p>
+              <strong>131</strong>
+            </article>
+            <article class="content-metric green">
+              <span class="content-metric-icon"><svg><use href="#icon-cap"></use></svg></span>
+              <p>Total Lessons</p>
+              <strong>1,368</strong>
+            </article>
+            <article class="content-metric cyan">
+              <span class="content-metric-icon"><svg><use href="#icon-users"></use></svg></span>
+              <p>Unique Faculty</p>
+              <strong>87</strong>
+            </article>
+            <article class="content-metric pink">
+              <span class="content-metric-icon"><svg><use href="#icon-book"></use></svg></span>
+              <p>Unique Courses</p>
+              <strong>132</strong>
+            </article>
+            <article class="content-metric indigo">
+              <span class="content-metric-icon"><svg><use href="#icon-clipboard"></use></svg></span>
+              <p>Total Courses</p>
+              <strong>2,435</strong>
+            </article>
+            <article class="content-metric red">
+              <span class="content-metric-icon"><svg><use href="#icon-percent"></use></svg></span>
+              <p>% Initiated</p>
+              <strong>5%</strong>
+            </article>
+          </section>
+
+          <!-- KPI cards show high-level metrics. -->
+          <section class="stats-grid" aria-label="High-level dashboard statistics">
+            <article class="stat-card blue">
+              <span class="stat-icon"><svg><use href="#icon-users"></use></svg></span>
+              <div><p>Total Students</p><strong>92,450</strong></div>
+            </article>
+            <article class="stat-card green">
+              <span class="stat-icon"><svg><use href="#icon-cap"></use></svg></span>
+              <div><p>Total Faculty</p><strong>5,246</strong></div>
+            </article>
+            <article class="stat-card orange">
+              <span class="stat-icon"><svg><use href="#icon-book"></use></svg></span>
+              <div><p>Total Courses</p><strong>1,245</strong></div>
+            </article>
+            <article class="stat-card purple">
+              <span class="stat-icon"><svg><use href="#icon-file"></use></svg></span>
+              <div><p>Total Content</p><strong>18,562</strong></div>
+            </article>
+            <article class="stat-card rose danger">
+              <span class="stat-icon"><svg><use href="#icon-clipboard"></use></svg></span>
+              <div><p>Evaluations Pending</p><strong>1,532</strong></div>
+            </article>
+          </section>
+        </div>
+
+        <!-- Cluster cards are generated from JavaScript data. -->
+        <section class="section-card cluster-section">
+          <div class="section-head">
+            <h2>Cluster Overview</h2>
+          </div>
+          <button class="rail-arrow left" aria-label="Previous cluster">‹</button>
+          <div class="cluster-grid" id="clusterGrid"></div>
+          <button class="rail-arrow right" aria-label="Next cluster">›</button>
+        </section>
+
+        <!-- Analytics grid: controls the insight cards below. CSS layout is in .analytics-grid. -->
+        <section class="analytics-grid" aria-label="Dashboard insights">
+          <!-- Top departments card: rows are filled by renderDepartmentTable() in script.js. -->
+          <article class="section-card table-panel">
+            <div class="section-head">
+              <div class="panel-title">
+                <span class="panel-icon"><svg><use href="#icon-bank"></use></svg></span>
+                <h2>Top Departments by Enrollment</h2>
+              </div>
+              <button class="small-select">View All</button>
+            </div>
+            <table>
+              <thead><tr><th>Department</th><th>Students</th><th>Courses</th><th>Completion Rate</th></tr></thead>
+              <tbody id="departmentRows"></tbody>
+            </table>
+          </article>
+
+          <!-- Cluster comparison card: static comparison table styled by .comparison-panel. -->
+          <article class="comparison-panel" aria-label="Cluster comparison">
+            <div class="comparison-head">
+              <div class="panel-title">
+                <span class="panel-icon"><svg><use href="#icon-grid"></use></svg></span>
+                <h2>Cluster Comparison</h2>
+              </div>
+              <span>4 clusters</span>
+            </div>
+            <div class="comparison-table-wrap">
+              <table class="comparison-table">
+                <thead>
+                  <tr>
+                    <th>Name ↕</th>
+                    <th>Students ↕</th>
+                    <th>Engagement ↕</th>
+                    <th>At-Risk ↕</th>
+                    <th>Avg Score ↕</th>
+                    <th>CO-PO Att. ↕</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Engineering</td>
+                    <td>38,240</td>
+                    <td class="metric-good">84%</td>
+                    <td class="metric-risk">398</td>
+                    <td>82%</td>
+                    <td><span class="comparison-progress"><i style="width: 88%"></i></span>88%</td>
+                  </tr>
+                  <tr>
+                    <td>Management</td>
+                    <td>14,760</td>
+                    <td class="metric-warning">70%</td>
+                    <td class="metric-risk">520</td>
+                    <td>68%</td>
+                    <td><span class="comparison-progress warn"><i style="width: 70%"></i></span>70%</td>
+                  </tr>
+                  <tr>
+                    <td>Sciences</td>
+                    <td>7,450</td>
+                    <td class="metric-good">80%</td>
+                    <td class="metric-risk">285</td>
+                    <td>78%</td>
+                    <td><span class="comparison-progress"><i style="width: 82%"></i></span>82%</td>
+                  </tr>
+                  <tr>
+                    <td>Liberal Arts</td>
+                    <td>5,680</td>
+                    <td class="metric-good">76%</td>
+                    <td class="metric-risk">275</td>
+                    <td>74%</td>
+                    <td><span class="comparison-progress warn"><i style="width: 74%"></i></span>74%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <!-- Student access pattern card: line chart is drawn into #lineChart by renderLineChart(). -->
+          <article class="section-card chart-panel">
+            <div class="section-head">
+              <div class="panel-title">
+                <span class="panel-icon"><svg><use href="#icon-chart"></use></svg></span>
+                <div><h2>Student Access Pattern</h2><p>Daily course access and content views</p></div>
+              </div>
+            </div>
+            <div class="chart-frame">
+              <svg id="lineChart" class="line-chart" viewBox="0 0 680 430" preserveAspectRatio="none" role="img" aria-label="Student access pattern chart"></svg>
+            </div>
+          </article>
+
+          <!-- Student engagement heatmap: table cells are generated by renderSimpleMatrix(). -->
+          <article class="section-card heatmap-panel">
+            <div class="section-head">
+              <div class="panel-title">
+                <span class="panel-icon"><svg><use href="#icon-clipboard"></use></svg></span>
+                <div><h2>Student Engagement Heatmap</h2><p>Activity completion status - RYG color coding</p></div>
+              </div>
+            </div>
+            <div class="responsive-table">
+              <table class="heatmap" id="heatmapTable"></table>
+            </div>
+            <div class="status-legend">
+              <span><i class="dot high"></i>High &ge;70%</span>
+              <span><i class="dot partial"></i>Partial 40-69%</span>
+              <span><i class="dot low"></i>Low &lt;40%</span>
+            </div>
+          </article>
+
+          <!-- Activity mix chart: horizontal stacked bars are drawn into #stackedBarChart. -->
+          <article class="section-card stacked-panel">
+            <div class="section-head">
+              <div class="panel-title">
+                <span class="panel-icon"><svg><use href="#icon-chart"></use></svg></span>
+                <div><h2>Activity Completion by Department</h2><p>Stacked values from the engagement heatmap</p></div>
+              </div>
+            </div>
+            <div class="stacked-chart-frame">
+              <svg id="stackedBarChart" class="stacked-chart" viewBox="0 0 720 430" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Activity mix by department horizontal stacked chart"></svg>
+              <div id="stackedTooltip" class="stacked-tooltip" role="status" aria-live="polite"></div>
+            </div>
+          </article>
+        </section>
+
+
+
+
+
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
