@@ -14,103 +14,73 @@ const clusters = [
 const filterRecords = [
   {
     cluster: "Engineering",
-    school: "University School of Engineering",
     institute: "University Institute of Engineering",
-    department: "Computer Science Engineering",
     program: "B.Tech CSE",
-    faculty: "Faculty of Engineering",
-    unit: "Academic Affairs",
-    date: "2025-05-03",
+    course: "Probability and Statistics",
+    semester: "Semester 3",
   },
   {
     cluster: "Engineering",
-    school: "University School of Engineering",
     institute: "University Institute of Engineering",
-    department: "Mechanical Engineering",
     program: "B.Tech Mechanical",
-    faculty: "Faculty of Engineering",
-    unit: "Research",
-    date: "2025-05-07",
+    course: "Engineering Thermodynamics",
+    semester: "Semester 4",
   },
   {
     cluster: "Engineering",
-    school: "University School of Computing",
     institute: "University Institute of Computing",
-    department: "Computer Applications",
     program: "BCA",
-    faculty: "Faculty of Engineering",
-    unit: "Admissions",
-    date: "2025-05-11",
+    course: "Mobile App Development",
+    semester: "Semester 5",
   },
   {
     cluster: "Engineering",
-    school: "University School of Computing",
     institute: "University Institute of Computing",
-    department: "Information Technology",
     program: "MCA",
-    faculty: "Faculty of Engineering",
-    unit: "Examinations",
-    date: "2025-05-15",
+    course: "Cloud Computing",
+    semester: "Semester 2",
   },
   {
     cluster: "Management",
-    school: "University School of Business",
     institute: "University School of Business",
-    department: "Management Studies",
     program: "MBA",
-    faculty: "Faculty of Management",
-    unit: "Academic Affairs",
-    date: "2025-05-18",
+    course: "Business Analytics",
+    semester: "Semester 1",
   },
   {
     cluster: "Management",
-    school: "University School of Business",
     institute: "University School of Business",
-    department: "Business Administration",
     program: "BBA",
-    faculty: "Faculty of Management",
-    unit: "Admissions",
-    date: "2025-05-21",
+    course: "Marketing Management",
+    semester: "Semester 3",
   },
   {
     cluster: "Sciences",
-    school: "University School of Sciences",
     institute: "Institute of Sciences",
-    department: "Physics",
     program: "B.Sc Physics",
-    faculty: "Faculty of Sciences",
-    unit: "Research",
-    date: "2025-05-24",
+    course: "Quantum Mechanics",
+    semester: "Semester 5",
   },
   {
     cluster: "Sciences",
-    school: "University School of Sciences",
     institute: "Institute of Sciences",
-    department: "Chemistry",
     program: "B.Sc Chemistry",
-    faculty: "Faculty of Sciences",
-    unit: "Examinations",
-    date: "2025-05-27",
+    course: "Organic Chemistry",
+    semester: "Semester 4",
   },
   {
     cluster: "Liberal Arts",
-    school: "University School of Liberal Arts",
     institute: "Institute of Liberal Arts",
-    department: "Communication Studies",
     program: "BA",
-    faculty: "Faculty of Liberal Arts",
-    unit: "Academic Affairs",
-    date: "2025-05-29",
+    course: "Communication Theory",
+    semester: "Semester 1",
   },
   {
     cluster: "Liberal Arts",
-    school: "University School of Liberal Arts",
     institute: "Institute of Liberal Arts",
-    department: "Psychology",
     program: "MA",
-    faculty: "Faculty of Liberal Arts",
-    unit: "Research",
-    date: "2025-06-02",
+    course: "Cognitive Psychology",
+    semester: "Semester 2",
   },
 ];
 
@@ -425,186 +395,45 @@ function setFilterState(select, isEnabled) {
   syncCustomSelect(select);
 }
 
-function setDateFilterState(input, isEnabled) {
-  if (!isEnabled) {
-    input.value = "";
-    input.closest(".date-field").classList.remove("is-invalid");
-  }
-
-  input.disabled = !isEnabled;
-  input.closest(".date-field").classList.toggle("is-disabled", !isEnabled);
-}
-
 const filterControls = {
   cluster: { selector: "#clusterFilter", placeholder: "All Clusters" },
-  school: { selector: "#schoolFilter", placeholder: "All Schools" },
   institute: { selector: "#instituteFilter", placeholder: "All Institutes" },
-  department: { selector: "#departmentFilter", placeholder: "All Depts" },
   program: { selector: "#programFilter", placeholder: "All Programs" },
-  faculty: { selector: "#facultyFilter", placeholder: "All Faculty" },
-  unit: { selector: "#unitFilter", placeholder: "All Units" },
+  course: { selector: "#courseFilter", placeholder: "All Courses" },
+  semester: { selector: "#semesterFilter", placeholder: "All Semesters" },
 };
 
 const filterLabels = {
   cluster: "Cluster",
-  school: "School",
   institute: "Institute",
-  department: "Department",
   program: "Program",
-  faculty: "Faculty",
-  unit: "Unit",
-  from: "From",
-  to: "To",
+  course: "Course",
+  semester: "Semester",
 };
 
 function getFilterSelections() {
   return Object.fromEntries(
     Object.entries(filterControls).map(([key, config]) => {
       const select = $(config.selector);
-      return [key, select.disabled ? "" : select.value];
+      return [key, select && select.disabled ? "" : select?.value || ""];
     })
   );
-}
-
-function parseDateInput(value) {
-  const trimmed = value.trim();
-  if (!trimmed) return null;
-
-  const nativeMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (nativeMatch) {
-    const [, yearValue, monthValue, dayValue] = nativeMatch;
-    const year = Number(yearValue);
-    const month = Number(monthValue);
-    const day = Number(dayValue);
-    const date = new Date(year, month - 1, day);
-    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day ? date : undefined;
-  }
-
-  const match = trimmed.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
-  if (!match) return undefined;
-
-  const [, dayValue, monthValue, yearValue] = match;
-  const day = Number(dayValue);
-  const month = Number(monthValue);
-  const year = Number(yearValue);
-  const date = new Date(year, month - 1, day);
-
-  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
-    return undefined;
-  }
-
-  return date;
-}
-
-function formatDateInput(date) {
-  return [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, "0"),
-    String(date.getDate()).padStart(2, "0"),
-  ].join("-");
-}
-
-function getDateRange() {
-  const fromInput = $("#fromFilter");
-  const toInput = $("#toFilter");
-
-  if (fromInput.disabled || toInput.disabled) {
-    return { from: null, to: null, isValid: true };
-  }
-
-  const from = parseDateInput(fromInput.value);
-  const to = parseDateInput(toInput.value);
-  const hasInvalidDate = from === undefined || to === undefined;
-  const hasInvalidRange = from instanceof Date && to instanceof Date && from > to;
-
-  fromInput.closest(".date-field").classList.toggle("is-invalid", from === undefined || hasInvalidRange);
-  toInput.closest(".date-field").classList.toggle("is-invalid", to === undefined || hasInvalidRange);
-
-  return {
-    from: from instanceof Date ? from : null,
-    to: to instanceof Date ? to : null,
-    isValid: !hasInvalidDate && !hasInvalidRange,
-  };
-}
-
-function recordMatchesDate(record, range = getDateRange()) {
-  if (!range.isValid) return true;
-  const recordDate = new Date(`${record.date}T00:00:00`);
-  if (range.from && recordDate < range.from) return false;
-  if (range.to && recordDate > range.to) return false;
-  return true;
 }
 
 function recordMatchesSelections(record, selections, ignoredKey = "") {
   return Object.entries(selections).every(([key, value]) => !value || key === ignoredKey || record[key] === value);
 }
 
-function resetFilterValue(key) {
-  if (filterControls[key]) {
-    const select = $(filterControls[key].selector);
-    select.value = "";
-  }
-
-  if (key === "from") $("#fromFilter").value = "";
-  if (key === "to") $("#toFilter").value = "";
-
-  applyFilters();
-}
-
-function resetAllFilters() {
-  Object.values(filterControls).forEach((config) => {
-    $(config.selector).value = "";
-  });
-  $("#fromFilter").value = "";
-  $("#toFilter").value = "";
-  applyFilters();
-}
-
-function renderActiveFilterChips() {
-  const chips = $("#activeFilterChips");
-  const resetButton = $("#resetFilters");
-  if (!chips || !resetButton) return;
-
-  const selections = getFilterSelections();
-  const range = getDateRange();
-  const activeFilters = Object.entries(selections)
-    .filter(([, value]) => Boolean(value))
-    .map(([key, value]) => [key, value]);
-
-  if ($("#fromFilter").value && range.from) activeFilters.push(["from", $("#fromFilter").value]);
-  if ($("#toFilter").value && range.to) activeFilters.push(["to", $("#toFilter").value]);
-
-  chips.innerHTML = "";
-  activeFilters.forEach(([key, value]) => {
-    const chip = document.createElement("span");
-    const label = document.createElement("span");
-    const button = document.createElement("button");
-
-    chip.className = "active-filter-chip";
-    label.textContent = `${filterLabels[key]}: ${value}`;
-    button.type = "button";
-    button.textContent = "×";
-    button.setAttribute("aria-label", `Remove ${filterLabels[key]} filter`);
-    button.addEventListener("click", () => resetFilterValue(key));
-    chip.append(label, button);
-    chips.appendChild(chip);
-  });
-
-  resetButton.disabled = activeFilters.length === 0;
-}
-
 function getFilterValues(key, selections) {
-  const range = getDateRange();
   return filterRecords
-    .filter((record) => recordMatchesDate(record, range) && recordMatchesSelections(record, selections, key))
+    .filter((record) => recordMatchesSelections(record, selections, key))
     .map((record) => record[key]);
 }
 
 function clusterMatchesFilters(clusterName) {
   const selections = getFilterSelections();
-  const range = getDateRange();
   return filterRecords.some(
-    (record) => record.cluster === clusterName && recordMatchesDate(record, range) && recordMatchesSelections(record, selections)
+    (record) => record.cluster === clusterName && recordMatchesSelections(record, selections)
   );
 }
 
@@ -613,10 +442,9 @@ function applyFilters() {
     const selections = getFilterSelections();
     const hasCluster = Boolean(selections.cluster);
 
-    ["#fromFilter", "#toFilter"].forEach((selector) => setDateFilterState($(selector), hasCluster));
-
     Object.entries(filterControls).forEach(([key, config]) => {
       const select = $(config.selector);
+      if (!select) return;
       setSelectOptions(select, config.placeholder, getFilterValues(key, selections));
       setFilterState(select, key === "cluster" || hasCluster);
     });
@@ -627,32 +455,11 @@ function applyFilters() {
 
   const activeClusterNames = clusters.filter((cluster) => clusterMatchesFilters(cluster.name)).map((cluster) => cluster.name);
   renderClusters(activeClusterNames);
-  renderActiveFilterChips();
 }
 
-// Filter initialization: wires dropdown change events and renders filtered clusters.
 function initFilters() {
   Object.values(filterControls).forEach((config) => {
-    $(config.selector).addEventListener("change", applyFilters);
-  });
-
-  $("#resetFilters")?.addEventListener("click", resetAllFilters);
-
-  ["#fromFilter", "#toFilter"].forEach((selector) => {
-    const input = $(selector);
-    input.addEventListener("click", () => {
-      input.showPicker?.();
-    });
-    input.addEventListener("change", () => {
-      const date = parseDateInput(input.value);
-      if (date instanceof Date) input.value = formatDateInput(date);
-      applyFilters();
-    });
-    input.addEventListener("blur", () => {
-      const date = parseDateInput(input.value);
-      if (date instanceof Date) input.value = formatDateInput(date);
-      applyFilters();
-    });
+    $(config.selector)?.addEventListener("change", applyFilters);
   });
 
   applyFilters();
