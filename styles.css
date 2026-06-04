@@ -1249,10 +1249,18 @@ th {
 }
 
 .analytics-grid > .table-panel,
-.analytics-grid > .comparison-panel,
-.analytics-grid > .chart-panel,
-.analytics-grid > .stacked-panel {
-  grid-column: span 2;
+.analytics-grid > .chart-panel {
+  grid-column: span 3;
+  height: 360px;
+  min-height: 0;
+}
+
+.analytics-grid > .comparison-panel {
+  grid-column: span 3;
+}
+
+.analytics-grid > .comparison-chart-panel {
+  grid-column: span 3;
 }
 
 .analytics-grid > .stacked-panel {
@@ -1263,6 +1271,7 @@ th {
 .chart-panel,
 .table-panel,
 .comparison-panel,
+.comparison-chart-panel,
 .stacked-panel {
   min-width: 0;
   min-height: 260px;
@@ -1290,8 +1299,20 @@ th {
   --panel-accent: #26b8c5;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
+  min-height: 320px;
   background:
     radial-gradient(circle at 92% 12%, rgba(38, 184, 197, 0.1), transparent 28%),
+    linear-gradient(180deg, #fff, #fbfdff);
+}
+
+.comparison-chart-panel {
+  --panel-accent: #1f87ff;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 320px;
+  padding: 22px 24px 18px;
+  background:
+    radial-gradient(circle at 88% 10%, rgba(31, 135, 255, 0.1), transparent 32%),
     linear-gradient(180deg, #fff, #fbfdff);
 }
 
@@ -1507,7 +1528,9 @@ th {
 }
 
 .analytics-grid .chart-frame {
+  height: 100%;
   min-height: 0;
+  overflow: hidden;
   padding-top: 8px;
 }
 
@@ -1516,7 +1539,7 @@ th {
   width: 100%;
   height: 100%;
   min-height: 0;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .analytics-grid .chart-panel h2 {

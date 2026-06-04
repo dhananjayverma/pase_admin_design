@@ -99,6 +99,19 @@ const departments = [
   ["BBA", "2,985", 42, 78],
 ];
 
+const clusterComparisonRows = [
+  { name: "Engineering", students: "38,240", engagement: 84, atRisk: 398, avgScore: 82, coPo: 88 },
+  { name: "Management", students: "14,760", engagement: 70, atRisk: 520, avgScore: 68, coPo: 70 },
+  { name: "Sciences", students: "7,450", engagement: 80, atRisk: 285, avgScore: 78, coPo: 82 },
+  { name: "Liberal Arts", students: "5,680", engagement: 76, atRisk: 275, avgScore: 74, coPo: 74 },
+];
+
+const clusterComparisonSeries = [
+  { key: "engagement", label: "Engagement", color: "#12c6b2" },
+  { key: "avgScore", label: "Avg Score", color: "#1f87ff" },
+  { key: "coPo", label: "CO-PO", color: "#f59e0b" },
+];
+
 // Student Engagement Heatmap table data.
 const heatmapRows = [
   ["CS-DEPT", 85, 78, 72, 68, 82, 75],
@@ -539,8 +552,11 @@ function renderLineChart() {
   const svg = $("#lineChart");
   if (!svg) return;
 
-  const width = 680;
-  const height = 430;
+  svg.replaceChildren();
+  const frame = svg.closest(".chart-frame");
+  const width = Math.max(420, Math.round(frame?.clientWidth || 680));
+  const height = Math.max(260, Math.round(frame?.clientHeight || 430));
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
   const padding = { top: 18, right: 18, bottom: 34, left: 46 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
@@ -590,6 +606,15 @@ function renderLineChart() {
   });
 }
 
+let lineChartResizeFrame = null;
+window.addEventListener("resize", () => {
+  cancelAnimationFrame(lineChartResizeFrame);
+  lineChartResizeFrame = requestAnimationFrame(() => {
+    renderLineChart();
+    renderClusterComparisonChart();
+  });
+});
+
 // Top Departments renderer: fills #departmentRows with completion progress bars.
 function renderDepartmentTable() {
   const body = $("#departmentRows");
@@ -605,6 +630,104 @@ function renderDepartmentTable() {
     `;
     body.appendChild(row);
   });
+}
+
+function renderClusterComparison() {
+  const body = $("#clusterComparisonRows");
+  const count = $("#clusterComparisonCount");
+  if (!body) return;
+
+  body.replaceChildren();
+  if (count) count.textContent = `${clusterComparisonRows.length} clusters`;
+
+  clusterComparisonRows.forEach((cluster) => {
+    const progressClass = cluster.coPo < 80 ? " warn" : "";
+    const engagementClass = cluster.engagement < 75 ? "metric-warning" : "metric-good";
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${cluster.name}</td>
+      <td>${cluster.students}</td>
+      <td class="${engagementClass}">${cluster.engagement}%</td>
+      <td class="metric-risk">${cluster.atRisk}</td>
+      <td>${cluster.avgScore}%</td>
+      <td><span class="comparison-progress${progressClass}"><i style="width: ${cluster.coPo}%"></i></span>${cluster.coPo}%</td>
+    `;
+    body.appendChild(row);
+  });
+}
+
+function renderClusterComparisonChart() {
+  const svg = $("#clusterComparisonChart");
+  if (!svg) return;
+
+  svg.replaceChildren();
+  const frame = svg.closest(".comparison-chart-frame");
+  const width = Math.max(420, Math.round(frame?.clientWidth || 680));
+  const height = Math.max(260, Math.round(frame?.clientHeight || 430));
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+  const padding = { top: 22, right: 24, bottom: 58, left: 48 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+  const yTicks = [0, 25, 50, 75, 100];
+  const xFor = (index) => padding.left + (index / Math.max(clusterComparisonRows.length - 1, 1)) * chartWidth;
+  const yFor = (value) => padding.top + chartHeight - (value / 100) * chartHeight;
+
+  yTicks.forEach((tick) => {
+    const y = yFor(tick);
+    svg.appendChild(svgEl("line", { x1: padding.left, x2: width - padding.right, y1: y, y2: y, class: "cluster-chart-grid" }));
+    const text = svgEl("text", { x: 10, y: y + 4, class: "cluster-chart-label" });
+    text.textContent = `${tick}%`;
+    svg.appendChild(text);
+  });
+
+  clusterComparisonRows.forEach((cluster, index) => {
+    const x = xFor(index);
+    svg.appendChild(svgEl("line", { x1: x, x2: x, y1: padding.top, y2: height - padding.bottom, class: "cluster-chart-grid vertical" }));
+    const label = svgEl("text", { x, y: height - 24, "text-anchor": "middle", class: "cluster-chart-label cluster-chart-x-label" });
+    const words = cluster.name.split(" ");
+    words.forEach((word, wordIndex) => {
+      const tspan = svgEl("tspan", { x, dy: wordIndex === 0 ? 0 : 13 });
+      tspan.textContent = word;
+      label.appendChild(tspan);
+    });
+    svg.appendChild(label);
+  });
+
+  clusterComparisonSeries.forEach((series) => {
+    const points = clusterComparisonRows.map((cluster, index) => ({
+      x: xFor(index),
+      y: yFor(cluster[series.key]),
+      value: cluster[series.key],
+      name: cluster.name,
+    }));
+
+    const pathData = points.reduce((path, point, pointIndex) => {
+      if (pointIndex === 0) return `M ${point.x} ${point.y}`;
+      const previous = points[pointIndex - 1];
+      const controlX = (previous.x + point.x) / 2;
+      return `${path} C ${controlX} ${previous.y}, ${controlX} ${point.y}, ${point.x} ${point.y}`;
+    }, "");
+
+    svg.appendChild(svgEl("path", { d: pathData, fill: "none", stroke: series.color, "stroke-width": 3, "stroke-linecap": "round" }));
+
+    points.forEach((point) => {
+      const dot = svgEl("circle", { cx: point.x, cy: point.y, r: 4, fill: series.color, class: "cluster-chart-dot" });
+      dot.appendChild(svgEl("title"));
+      dot.querySelector("title").textContent = `${point.name} ${series.label}: ${point.value}%`;
+      svg.appendChild(dot);
+    });
+  });
+
+  const legend = svgEl("g", { class: "cluster-chart-legend" });
+  clusterComparisonSeries.forEach((series, index) => {
+    const x = padding.left + index * 112;
+    legend.appendChild(svgEl("line", { x1: x, x2: x + 20, y1: 12, y2: 12, stroke: series.color, "stroke-width": 3, "stroke-linecap": "round" }));
+    const label = svgEl("text", { x: x + 28, y: 16, class: "cluster-chart-label" });
+    label.textContent = series.label;
+    legend.appendChild(label);
+  });
+  svg.appendChild(legend);
 }
 
 // Heatmap cell color helper: maps percentage values to RYG classes.
@@ -911,6 +1034,8 @@ async function initDashboard() {
   initActiveFilterChips();
   renderLineChart();
   renderDepartmentTable();
+  renderClusterComparison();
+  renderClusterComparisonChart();
   renderSimpleMatrix("#heatmapTable", heatmapColumns, heatmapRows);
   renderStackedBarChart();
 }

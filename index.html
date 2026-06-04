@@ -228,65 +228,6 @@
             </table>
           </article>
 
-          <!-- Cluster comparison card: static comparison table styled by .comparison-panel. -->
-          <article class="comparison-panel" aria-label="Cluster comparison">
-            <div class="comparison-head">
-              <div class="panel-title">
-                <span class="panel-icon"><svg><use href="#icon-grid"></use></svg></span>
-                <h2>Cluster Comparison</h2>
-              </div>
-              <span>4 clusters</span>
-            </div>
-            <div class="comparison-table-wrap">
-              <table class="comparison-table">
-                <thead>
-                  <tr>
-                    <th>Name ↕</th>
-                    <th>Students ↕</th>
-                    <th>Engagement ↕</th>
-                    <th>At-Risk ↕</th>
-                    <th>Avg Score ↕</th>
-                    <th>CO-PO Att. ↕</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Engineering</td>
-                    <td>38,240</td>
-                    <td class="metric-good">84%</td>
-                    <td class="metric-risk">398</td>
-                    <td>82%</td>
-                    <td><span class="comparison-progress"><i style="width: 88%"></i></span>88%</td>
-                  </tr>
-                  <tr>
-                    <td>Management</td>
-                    <td>14,760</td>
-                    <td class="metric-warning">70%</td>
-                    <td class="metric-risk">520</td>
-                    <td>68%</td>
-                    <td><span class="comparison-progress warn"><i style="width: 70%"></i></span>70%</td>
-                  </tr>
-                  <tr>
-                    <td>Sciences</td>
-                    <td>7,450</td>
-                    <td class="metric-good">80%</td>
-                    <td class="metric-risk">285</td>
-                    <td>78%</td>
-                    <td><span class="comparison-progress"><i style="width: 82%"></i></span>82%</td>
-                  </tr>
-                  <tr>
-                    <td>Liberal Arts</td>
-                    <td>5,680</td>
-                    <td class="metric-good">76%</td>
-                    <td class="metric-risk">275</td>
-                    <td>74%</td>
-                    <td><span class="comparison-progress warn"><i style="width: 74%"></i></span>74%</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </article>
-
           <!-- Student access pattern card: line chart is drawn into #lineChart by renderLineChart(). -->
           <article class="section-card chart-panel">
             <div class="section-head">
@@ -296,7 +237,7 @@
               </div>
             </div>
             <div class="chart-frame">
-              <svg id="lineChart" class="line-chart" viewBox="0 0 680 430" preserveAspectRatio="none" role="img" aria-label="Student access pattern chart"></svg>
+              <svg id="lineChart" class="line-chart" viewBox="0 0 680 430" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Student access pattern chart"></svg>
             </div>
           </article>
 
@@ -331,10 +272,33 @@
               <div id="stackedTooltip" class="stacked-tooltip" role="status" aria-live="polite"></div>
             </div>
           </article>
+
+          <!-- Cluster comparison card: rows are filled by renderClusterComparison(). -->
+          <article class="comparison-panel" aria-label="Cluster comparison">
+            <div class="comparison-head">
+              <div class="panel-title">
+                <span class="panel-icon"><svg><use href="#icon-grid"></use></svg></span>
+                <h2>Cluster Comparison</h2>
+              </div>
+              <span id="clusterComparisonCount">4 clusters</span>
+            </div>
+            <div class="comparison-table-wrap">
+              <table class="comparison-table">
+                <thead>
+                  <tr>
+                    <th>Name ↕</th>
+                    <th>Students ↕</th>
+                    <th>Engagement ↕</th>
+                    <th>At-Risk ↕</th>
+                    <th>Avg Score ↕</th>
+                    <th>CO-PO Att. ↕</th>
+                  </tr>
+                </thead>
+                <tbody id="clusterComparisonRows"></tbody>
+              </table>
+            </div>
+          </article>
         </section>
-
-
-
 
 
       </main>
