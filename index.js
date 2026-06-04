@@ -344,6 +344,7 @@ function enhanceFilterDropdowns() {
 // Cluster overview renderer: creates the cards inside #clusterGrid.
 function renderClusters(activeClusterNames = clusters.map((cluster) => cluster.name)) {
   const grid = $("#clusterGrid");
+  if (!grid) return;
   grid.innerHTML = "";
 
   clusters.forEach((cluster) => {
@@ -465,6 +466,74 @@ function initFilters() {
   applyFilters();
 }
 
+// Active Filter Chips Management (Moved from inline HTML script)
+function initActiveFilterChips() {
+  const filterSelects = document.querySelectorAll('[data-filter-name]');
+  const activeFilterChips = document.getElementById('activeFilterChips');
+  const activeFilterRow = document.querySelector('.active-filter-row');
+  const resetButton = document.getElementById('resetFilters');
+
+  if (!filterSelects.length || !activeFilterChips || !activeFilterRow || !resetButton) return;
+
+  function updateActiveFilters() {
+    activeFilterChips.innerHTML = '';
+    const filters = [];
+
+    filterSelects.forEach(select => {
+      const value = select.value;
+      const name = select.getAttribute('data-filter-name');
+      if (value) {
+        filters.push({ name, value, id: select.id });
+      }
+    });
+
+    if (filters.length === 0) {
+      activeFilterRow.style.display = 'none';
+      return;
+    }
+
+    activeFilterRow.style.display = 'flex';
+
+    filters.forEach(filter => {
+      const chip = document.createElement('span');
+      chip.className = 'active-filter-chip';
+      chip.innerHTML = `
+        <span>${filter.name}: ${filter.value}</span>
+        <button type="button" class="chip-remove-btn" data-filter-id="${filter.id}" aria-label="Remove ${filter.name} filter">×</button>
+      `;
+      activeFilterChips.appendChild(chip);
+    });
+
+    // Add event listeners to remove buttons
+    activeFilterChips.querySelectorAll('.chip-remove-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const filterId = e.currentTarget.getAttribute('data-filter-id');
+        const select = document.getElementById(filterId);
+        if (select) {
+          select.value = '';
+          applyFilters();
+          updateActiveFilters();
+        }
+      });
+    });
+  }
+
+  filterSelects.forEach(select => {
+    select.addEventListener('change', updateActiveFilters);
+  });
+
+  resetButton.addEventListener('click', () => {
+    filterSelects.forEach(select => {
+      select.value = '';
+    });
+    applyFilters();
+    updateActiveFilters();
+  });
+
+  // Initial update
+  updateActiveFilters();
+}
+
 // Student Access Pattern renderer: draws the smooth two-line SVG chart.
 function renderLineChart() {
   const svg = $("#lineChart");
@@ -549,6 +618,7 @@ function cellClass(value, partialThreshold = 70) {
 // Matrix renderer: builds the Student Engagement Heatmap table.
 function renderSimpleMatrix(tableSelector, columns, rows) {
   const table = $(tableSelector);
+  if (!table) return;
   const thead = document.createElement("thead");
   const tbody = document.createElement("tbody");
 
@@ -684,10 +754,6 @@ function renderStackedBarChart() {
     svg.appendChild(rowGroup);
   });
 }
-
-
-
-
 
 // Mobile navigation drawer: opens/closes the primary nav on smaller screens.
 function initNavigationDrawer() {
@@ -842,13 +908,11 @@ async function initDashboard() {
   initNavigationDrawer();
   enhanceFilterDropdowns();
   initFilters();
+  initActiveFilterChips();
   renderLineChart();
   renderDepartmentTable();
   renderSimpleMatrix("#heatmapTable", heatmapColumns, heatmapRows);
   renderStackedBarChart();
-
-
-
 }
 
 initDashboard();

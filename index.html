@@ -111,41 +111,53 @@
         </section>
 
         <section class="filter-bar" aria-label="Dashboard filters">
-          <label class="filter-field">
-            <span class="filter-icon"><svg><use href="#icon-grid"></use></svg></span>
-            <span class="filter-copy"><span>Cluster</span></span>
-            <select id="clusterFilter">
-              <option>All Clusters</option>
-            </select>
-          </label>
-          <label class="filter-field">
-            <span class="filter-icon"><svg><use href="#icon-bank"></use></svg></span>
-            <span class="filter-copy"><span>Inatitute</span></span>
-            <select id="instituteFilter">
-              <option>All Institutes</option>
-            </select>
-          </label>
-          <label class="filter-field">
-            <span class="filter-icon"><svg><use href="#icon-cap"></use></svg></span>
-            <span class="filter-copy"><span>Program</span></span>
-            <select id="programFilter">
-              <option>All Programs</option>
-            </select>
-          </label>
-          <label class="filter-field">
-            <span class="filter-icon"><svg><use href="#icon-book"></use></svg></span>
-            <span class="filter-copy"><span>Course</span></span>
-            <select id="courseFilter">
-              <option>All Courses</option>
-            </select>
-          </label>
-          <label class="filter-field">
-            <span class="filter-icon"><svg><use href="#icon-calendar"></use></svg></span>
-            <span class="filter-copy"><span>Semester</span></span>
-            <select id="semesterFilter">
-              <option>All Semesters</option>
-            </select>
-          </label>
+          <div class="filter-controls">
+            <label class="filter-field">
+              <span class="filter-icon"><svg><use href="#icon-grid"></use></svg></span>
+              <span class="filter-copy"><span>Cluster</span></span>
+              <select id="clusterFilter" data-filter-name="Cluster">
+                <option value="">All Clusters</option>
+              </select>
+            </label>
+            <label class="filter-field">
+              <span class="filter-icon"><svg><use href="#icon-bank"></use></svg></span>
+              <span class="filter-copy"><span>Inatitute</span></span>
+              <select id="instituteFilter" data-filter-name="Institute">
+                <option value="">All Institutes</option>
+              </select>
+            </label>
+            <label class="filter-field">
+              <span class="filter-icon"><svg><use href="#icon-cap"></use></svg></span>
+              <span class="filter-copy"><span>Program</span></span>
+              <select id="programFilter" data-filter-name="Program">
+                <option value="">All Programs</option>
+              </select>
+            </label>
+            <label class="filter-field">
+              <span class="filter-icon"><svg><use href="#icon-book"></use></svg></span>
+              <span class="filter-copy"><span>Course</span></span>
+              <select id="courseFilter" data-filter-name="Course">
+                <option value="">All Courses</option>
+              </select>
+            </label>
+            <label class="filter-field">
+              <span class="filter-icon"><svg><use href="#icon-calendar"></use></svg></span>
+              <span class="filter-copy"><span>Semester</span></span>
+              <select id="semesterFilter" data-filter-name="Semester">
+                <option value="">All Semesters</option>
+              </select>
+            </label>
+          </div>
+          <div class="active-filter-row" aria-live="polite" style="display: none;">
+            <div class="active-filter-list">
+              <span class="active-filter-label">Active filters:</span>
+              <div class="active-filter-chips" id="activeFilterChips"></div>
+            </div>
+            <button class="filter-reset" id="resetFilters" type="button">
+              <span aria-hidden="true">↻</span>
+              Reset all
+            </button>
+          </div>
         </section>
 
         <div class="metrics-board" aria-label="Dashboard statistics">
@@ -156,7 +168,6 @@
               <div>
                 <p>Total Students</p>
                 <strong>106,850</strong>
-                <span class="stat-trend"><span class="trend-arrow">↑</span> 0% Jun: +0 | May: +0</span>
               </div>
             </article>
             <article class="stat-card green">
@@ -329,6 +340,6 @@
       </main>
     </div>
 
-    <script src="script.js"></script>
+    <script src="index.js"></script>
   </body>
 </html>
