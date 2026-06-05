@@ -3,7 +3,7 @@ if (localStorage.getItem("theme") === "dark") {
   document.body.classList.add("dark-theme");
 }
 
-// Dashboard data: update these arrays/objects to change card, table, filter, and chart values.
+// DATA: Cluster Overview cards (#clusterGrid).
 const clusters = [
   { name: "Engineering", students: "38,240", departments: 12, courses: 562, color: "#ff5d66", icon: "icon-building" },
   { name: "Management", students: "14,760", departments: 6, courses: 238, color: "#297dff", icon: "icon-users" },
@@ -11,6 +11,7 @@ const clusters = [
   { name: "Liberal Arts", students: "5,680", departments: 5, courses: 118, color: "#954de6", icon: "icon-book" },
 ];
 
+// DATA: Filter bar options and dependencies (#clusterFilter, #instituteFilter, #programFilter, #courseFilter, #semesterFilter).
 const filterRecords = [
   {
     cluster: "Engineering",
@@ -84,13 +85,13 @@ const filterRecords = [
   },
 ];
 
-// Student Access Pattern line chart data.
+// DATA: Student Access Pattern line chart (#lineChart).
 const lineSeries = [
   { label: "Course Accesses", color: "#18c8f4", values: [18500, 20500, 19800, 21800, 19200, 11200, 9800] },
   { label: "Content Views", color: "#12c6b2", values: [13500, 15500, 14900, 16200, 14100, 8200, 7000] },
 ];
 
-// Top Departments table data.
+// DATA: Top Departments by Enrollment table (#departmentRows).
 const departments = [
   ["Computer Science Engineering", "12,245", 156, 89],
   ["MBA", "5,842", 78, 85],
@@ -99,6 +100,7 @@ const departments = [
   ["BBA", "2,985", 42, 78],
 ];
 
+// DATA: Cluster Comparison table (#clusterComparisonRows) and grouped bar chart (#clusterComparisonChart).
 const clusterComparisonRows = [
   { name: "Engineering", students: "38,240", engagement: 84, atRisk: 398, avgScore: 82, coPo: 88 },
   { name: "Management", students: "14,760", engagement: 70, atRisk: 520, avgScore: 68, coPo: 70 },
@@ -106,13 +108,14 @@ const clusterComparisonRows = [
   { name: "Liberal Arts", students: "5,680", engagement: 76, atRisk: 275, avgScore: 74, coPo: 74 },
 ];
 
+// DATA: Metrics shown as bars in the Cluster Comparison Chart.
 const clusterComparisonSeries = [
   { key: "engagement", label: "Engagement", color: "#12c6b2" },
   { key: "avgScore", label: "Avg Score", color: "#1f87ff" },
   { key: "coPo", label: "CO-PO", color: "#f59e0b" },
 ];
 
-// Student Engagement Heatmap table data.
+// DATA: Student Engagement Heatmap table (#heatmapTable).
 const heatmapRows = [
   ["CS-DEPT", 85, 78, 72, 68, 82, 75],
   ["ME-DEPT", 72, 68, 65, 55, 70, 80],
@@ -126,114 +129,7 @@ const heatmapRows = [
 
 const heatmapColumns = ["", "VIDEOS", "ASSIGNMENTS", "QUIZZES", "FORUMS", "LECTURE NOTES", "PROJECTS"];
 
-const contentCategories = [
-  { key: "pages", label: "Pages", color: "#3f82f3" },
-  { key: "ppts", label: "PPTs", color: "#8358ef" },
-  { key: "forums", label: "Forums", color: "#f59e0b" },
-  { key: "labs", label: "Lab Manuals", color: "#d97706" },
-];
-
-const contentDailyRows = [
-  { label: "May 20", pages: 4, ppts: 7, forums: 5, labs: 3 },
-  { label: "May 21", pages: 5, ppts: 4, forums: 3, labs: 1 },
-  { label: "May 22", pages: 18, ppts: 17, forums: 17, labs: 6 },
-  { label: "May 23", pages: 40, ppts: 40, forums: 40, labs: 3 },
-  { label: "May 24", pages: 22, ppts: 22, forums: 22, labs: 6 },
-  { label: "May 25", pages: 48, ppts: 45, forums: 48, labs: 27 },
-  { label: "May 26", pages: 46, ppts: 46, forums: 46, labs: 10 },
-  { label: "May 27", pages: 158, ppts: 238, forums: 238, labs: 17 },
-  { label: "May 28", pages: 222, ppts: 318, forums: 310, labs: 5 },
-  { label: "May 29", pages: 210, ppts: 275, forums: 272, labs: 14 },
-  { label: "May 30", pages: 160, ppts: 225, forums: 230, labs: 10 },
-  { label: "May 31", pages: 60, ppts: 98, forums: 100, labs: 17 },
-  { label: "Jun 1", pages: 240, ppts: 322, forums: 268, labs: 11 },
-  { label: "Jun 2", pages: 4, ppts: 16, forums: 18, labs: 1 },
-];
-
-const contentHourlyRows = [
-  { hour: "00:00", pages: 13, ppts: 13, forums: 13, labs: 0 },
-  { hour: "01:00", pages: 4, ppts: 4, forums: 3, labs: 2 },
-  { hour: "02:00", pages: 0, ppts: 0, forums: 0, labs: 0 },
-  { hour: "03:00", pages: 0, ppts: 0, forums: 0, labs: 0 },
-  { hour: "04:00", pages: 1, ppts: 1, forums: 1, labs: 0 },
-  { hour: "05:00", pages: 1, ppts: 1, forums: 1, labs: 0 },
-  { hour: "06:00", pages: 20, ppts: 24, forums: 24, labs: 2 },
-  { hour: "07:00", pages: 13, ppts: 16, forums: 13, labs: 5 },
-  { hour: "08:00", pages: 7, ppts: 12, forums: 12, labs: 0 },
-  { hour: "09:00", pages: 48, ppts: 58, forums: 60, labs: 14 },
-  { hour: "10:00", pages: 167, ppts: 215, forums: 215, labs: 10 },
-  { hour: "11:00", pages: 153, ppts: 222, forums: 211, labs: 10 },
-  { hour: "12:00", pages: 116, ppts: 170, forums: 156, labs: 19 },
-  { hour: "13:00", pages: 106, ppts: 141, forums: 137, labs: 10 },
-  { hour: "14:00", pages: 138, ppts: 185, forums: 168, labs: 17 },
-  { hour: "15:00", pages: 115, ppts: 143, forums: 132, labs: 14 },
-  { hour: "16:00", pages: 82, ppts: 126, forums: 128, labs: 6 },
-  { hour: "17:00", pages: 14, ppts: 20, forums: 20, labs: 1 },
-  { hour: "18:00", pages: 30, ppts: 31, forums: 31, labs: 3 },
-  { hour: "19:00", pages: 42, ppts: 57, forums: 57, labs: 3 },
-  { hour: "20:00", pages: 21, ppts: 31, forums: 31, labs: 2 },
-  { hour: "21:00", pages: 47, ppts: 62, forums: 60, labs: 2 },
-  { hour: "22:00", pages: 63, ppts: 86, forums: 85, labs: 3 },
-  { hour: "23:00", pages: 45, ppts: 60, forums: 60, labs: 9 },
-];
-
-const subpartRows = [
-  { key: "outcomes", label: "Outcomes", value: 1301, color: "#10b981" },
-  { key: "pages", label: "Pages", value: 1237, color: "#3f82f3" },
-  { key: "forum", label: "Forum", value: 1617, color: "#8358ef" },
-  { key: "video", label: "Video", value: 117, color: "#f59e0b" },
-  { key: "references", label: "References", value: 1903, color: "#e0529c" },
-  { key: "labs", label: "Lab Manuals", value: 131, color: "#d97706" },
-  { key: "pptTokens", label: "PPT Tokens", value: 8612134, color: "#6366f1" },
-  { key: "pageTokens", label: "Page Tokens", value: 5835296, color: "#14b8a6" },
-];
-
-const comparisonRows = [
-  { label: "Mechanical Engineering", pages: 258, ppts: 370, forums: 376, labs: 33 },
-  { label: "Computer Science\nEngineering", pages: 270, ppts: 220, forums: 221, labs: 4 },
-  { label: "Aerospace Engineering", pages: 250, ppts: 280, forums: 280, labs: 0 },
-  { label: "Biotechnology Engg", pages: 76, ppts: 139, forums: 140, labs: 0 },
-  { label: "Food Technology Engg", pages: 64, ppts: 115, forums: 115, labs: 1 },
-  { label: "Chemical Engineering", pages: 79, ppts: 88, forums: 89, labs: 1 },
-  { label: "Unknown", pages: 65, ppts: 66, forums: 66, labs: 36 },
-  { label: "CSE-AIT", pages: 43, ppts: 65, forums: 67, labs: 15 },
-  { label: "Education", pages: 50, ppts: 76, forums: 76, labs: 0 },
-  { label: "Automobile Engineering", pages: 52, ppts: 53, forums: 53, labs: 15 },
-  { label: "Electrical Engineering", pages: 36, ppts: 65, forums: 66, labs: 5 },
-  { label: "Electronics and\nCommunicatio...", pages: 45, ppts: 54, forums: 27, labs: 0 },
-  { label: "Pharmaceutical Sciences", pages: 28, ppts: 53, forums: 0, labs: 9 },
-  { label: "Management", pages: 27, ppts: 31, forums: 30, labs: 0 },
-  { label: "Physiotherapy", pages: 23, ppts: 18, forums: 18, labs: 9 },
-];
-
-const facultyPerformanceRows = [
-  ["Gursimran Kaur", "e16567", "Engineering", "Computer Science", "CONT_24SMT-341 :: PROBABILITY AN...", "CONT_24SMT-341", "Unit 1", 21, 21, 21, 0, 24],
-  ["Suman Debnath", "e11804", "Engineering", "Mechanical Engineering", "CONT_25MET-222 :: ENGINEERING TH...", "CONT_25MET-222", "Unit 1", 19, 19, 19, 0, 19],
-  ["Gurpreet Singh", "e2560", "Engineering", "Mechanical Engineering", "CONT_24MEH-323 :: FLUID MECHANIC...", "CONT_24MEH-323", "Unit 3", 20, 20, 20, 0, 19],
-  ["Gurpreet Singh", "e2560", "Engineering", "Mechanical Engineering", "CONT_24MEH-323 :: FLUID MECHANIC...", "CONT_24MEH-323", "Unit 1", 20, 19, 20, 0, 19],
-  ["Showket Ahmad M...", "e12366", "Education", "Education", "CONT_25EDT-206 :: SOCIO-ECONOMI...", "CONT_25EDT-206", "Unit 1", 22, 22, 22, 0, 18],
-  ["Parveen Kumar Sai...", "e13339", "Engineering", "Computer Science", "CONT_24CST-352 :: MOBILE APP USER...", "CONT_24CST-352", "Unit 1", 15, 15, 15, 0, 18],
-  ["Gurpreet Singh", "e2560", "Engineering", "Mechanical Engineering", "CONT_24MEH-323 :: FLUID MECHANIC...", "CONT_24MEH-323", "Unit 2", 20, 19, 20, 0, 18],
-  ["Narinder Singh Kha...", "e1738", "Engineering", "Mechanical Engineering", "CONT_24MET-331 :: ENGINEERING EC...", "CONT_24MET-331", "Unit 1", 16, 15, 16, 0, 17],
-  ["Tarunpreet Singh", "e20192", "Engineering", "Aerospace Engineering", "CONT_23AST-402 :: PROFESSIONAL E...", "CONT_23AST-402", "Unit 2", 16, 16, 16, 0, 16],
-  ["Sanjeev Kumar Dha...", "e16511", "Engineering", "Aerospace Engineering", "CONT_25ASH-211 :: STRENGTH OF MA...", "CONT_25ASH-211", "Unit 1", 16, 16, 16, 0, 16],
-  ["G Prasad", "e14018", "Engineering", "Aerospace Engineering", "CONT_26AST-620 :: AEROSPACE STRU...", "CONT_26AST-620", "Unit 1", 13, 15, 15, 0, 16],
-  ["Tarunpreet Singh", "e20192", "Engineering", "Aerospace Engineering", "CONT_23AST-402 :: PROFESSIONAL E...", "CONT_23AST-402", "Unit 1", 16, 16, 16, 0, 16],
-  ["Parveen Kumar Sai...", "e13339", "Engineering", "Computer Science", "CONT_24CST-352 :: MOBILE APP USER...", "CONT_24CST-352", "Unit 2", 15, 15, 15, 0, 15],
-  ["Gursimran Kaur", "e16567", "Engineering", "Computer Science", "CONT_24SMT-341 :: PROBABILITY AN...", "CONT_24SMT-341", "Unit 2", 15, 20, 20, 0, 15],
-  ["Tarunpreet Singh", "e20192", "Engineering", "Aerospace Engineering", "CONT_24AST-311 :: COMBUSTION THE...", "CONT_24AST-311", "Unit 1", 15, 15, 15, 0, 15],
-  ["Priyanka Devi", "e16550", "Engineering", "Computer Science", "CONT_23CST-401 :: PARALLEL AND DI...", "CONT_23CST-401", "Unit 2", 15, 15, 15, 0, 15],
-  ["Akant Kumar Singh", "e13980", "Engineering", "Automobile Engineering", "CONT_24AET-334 :: DESIGN FOR AUT...", "CONT_24AET-334", "Unit 1", 15, 15, 15, 0, 15],
-  ["Suman Debnath", "e11804", "Engineering", "Mechanical Engineering", "CONT_25MET-222 :: ENGINEERING TH...", "CONT_25MET-222", "Unit 2", 13, 20, 20, 0, 14],
-  ["Sugandh Gupta", "e13120", "Engineering", "Aerospace Engineering", "CONT_26AST-613 :: SPACE VEHICLES ...", "CONT_26AST-613", "Unit 1", 14, 14, 14, 0, 14],
-  ["Rupinder Singh", "e9373", "Engineering", "Mechanical Engineering", "CONT_25MEH-221 :: STRENGTH OF MA...", "CONT_25MEH-221", "Unit 1", 14, 20, 20, 0, 14],
-  ["Suman Debnath", "e11804", "Engineering", "Mechanical Engineering", "CONT_26MEH-626 :: COMPUTATIONAL...", "CONT_26MEH-626", "Unit 1", 11, 8, 11, 0, 14],
-  ["Vivek Sharma", "e4851", "Engineering", "Mechanical Engineering", "CONT_24MEH-322 :: HEAT TRANSFER", "CONT_24MEH-322", "Unit 1", 14, 15, 15, 0, 14],
-  ["Saubhagya Ranjan ...", "e6075", "Engineering", "Chemical Engineering", "CONT_24CHT-311 :: RENEWABLE ENER...", "CONT_24CHT-311", "Unit 1", 15, 15, 15, 0, 13],
-  ["Tarunpreet Singh", "e20192", "Engineering", "Aerospace Engineering", "CONT_24AST-311 :: COMBUSTION THE...", "CONT_24AST-311", "Unit 2", 12, 15, 15, 0, 12],
-];
-
-// Stacked bar chart data is derived from the Student Engagement Heatmap.
+// DATA: Activity Completion by Department chart. Derived from the Student Engagement Heatmap data above.
 const stackedActivityColors = ["#1889aa", "#f5a23a", "#704ee6", "#55c8c2", "#9bd81c", "#de8200"];
 const stackedActivitySeries = heatmapColumns.slice(1).map((label, index) => ({
   label: label
@@ -479,7 +375,7 @@ function initFilters() {
   applyFilters();
 }
 
-// Active Filter Chips Management (Moved from inline HTML script)
+// Renderer: Active filter chips shown below the filter bar.
 function initActiveFilterChips() {
   const filterSelects = document.querySelectorAll('[data-filter-name]');
   const activeFilterChips = document.getElementById('activeFilterChips');
@@ -517,7 +413,6 @@ function initActiveFilterChips() {
       activeFilterChips.appendChild(chip);
     });
 
-    // Add event listeners to remove buttons
     activeFilterChips.querySelectorAll('.chip-remove-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const filterId = e.currentTarget.getAttribute('data-filter-id');
@@ -543,11 +438,10 @@ function initActiveFilterChips() {
     updateActiveFilters();
   });
 
-  // Initial update
   updateActiveFilters();
 }
 
-// Student Access Pattern renderer: draws the smooth two-line SVG chart.
+// Renderer: Student Access Pattern line chart (#lineChart), using lineSeries data.
 function renderLineChart() {
   const svg = $("#lineChart");
   if (!svg) return;
@@ -615,7 +509,7 @@ window.addEventListener("resize", () => {
   });
 });
 
-// Top Departments renderer: fills #departmentRows with completion progress bars.
+// Renderer: Top Departments table (#departmentRows), using departments data.
 function renderDepartmentTable() {
   const body = $("#departmentRows");
   if (!body) return;
@@ -632,6 +526,7 @@ function renderDepartmentTable() {
   });
 }
 
+// Renderer: Cluster Comparison table (#clusterComparisonRows), then refreshes the matching bar chart.
 function renderClusterComparison() {
   const body = $("#clusterComparisonRows");
   const count = $("#clusterComparisonCount");
@@ -658,6 +553,7 @@ function renderClusterComparison() {
   renderClusterComparisonChart();
 }
 
+// Renderer: Cluster Comparison grouped bar chart (#clusterComparisonChart), using clusterComparisonRows and clusterComparisonSeries.
 function renderClusterComparisonChart() {
   const svg = $("#clusterComparisonChart");
   if (!svg) return;
@@ -814,7 +710,7 @@ function cellClass(value, partialThreshold = 70) {
   return "cell-low";
 }
 
-// Matrix renderer: builds the Student Engagement Heatmap table.
+// Renderer: Generic matrix table builder. Used for the Student Engagement Heatmap (#heatmapTable).
 function renderSimpleMatrix(tableSelector, columns, rows) {
   const table = $(tableSelector);
   if (!table) return;
@@ -841,7 +737,7 @@ function renderSimpleMatrix(tableSelector, columns, rows) {
   table.appendChild(tbody);
 }
 
-// Activity Mix renderer: draws horizontal stacked SVG bars by department.
+// Renderer: Activity Completion by Department stacked bar chart (#stackedBarChart).
 function renderStackedBarChart() {
   const svg = $("#stackedBarChart");
   const tooltip = $("#stackedTooltip");

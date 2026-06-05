@@ -1235,7 +1235,7 @@ th {
   color: #5d6880;
 }
 
-/* Analytics grid layout: places the department, comparison, access, heatmap, and stacked chart cards. */
+/* Layout: Analytics grid for departments, access pattern, heatmap, activity, and cluster comparison sections. */
 .analytics-grid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -1267,7 +1267,7 @@ th {
   grid-column: span 3;
 }
 
-/* Analytics card shells: shared sizing and surface styling for insight cards. */
+/* Shared card shell: common sizing and surface for analytics panels. */
 .chart-panel,
 .table-panel,
 .comparison-panel,
@@ -1284,7 +1284,7 @@ th {
   box-shadow: var(--shadow);
 }
 
-/* Top Departments card: table rows are generated in script.js. */
+/* Section style: Top Departments by Enrollment table. */
 .table-panel {
   --panel-accent: #30c764;
   display: grid;
@@ -1294,7 +1294,7 @@ th {
     linear-gradient(180deg, #fff, #fbfdff);
 }
 
-/* Cluster Comparison card: static table with progress bars and risk metrics. */
+/* Section style: Cluster Comparison table and risk/progress cells. */
 .comparison-panel {
   --panel-accent: #26b8c5;
   display: grid;
@@ -1316,7 +1316,7 @@ th {
     linear-gradient(180deg, #fff, #fbfdff);
 }
 
-/* Activity Mix card: contains the horizontal stacked SVG chart beside the heatmap. */
+/* Section style: Activity Completion by Department stacked chart. */
 .stacked-panel {
   --panel-accent: #914ff0;
   display: grid;
@@ -1411,7 +1411,7 @@ th {
   border-radius: inherit;
 }
 
-/* Comparison header and table: column spacing, risk colors, and CO-PO bars. */
+/* Shared comparison header/table styles. */
 .comparison-head {
   display: flex;
   align-items: center;
@@ -1494,6 +1494,7 @@ th {
   background: linear-gradient(90deg, #c8821f, #f5a623);
 }
 
+/* Section style: Cluster Comparison Chart grouped bars, legend, hover band, and tooltip. */
 .comparison-chart-frame {
   position: relative;
   min-height: 0;
