@@ -102,18 +102,13 @@ const departments = [
 
 // DATA: Cluster Comparison table (#clusterComparisonRows) and grouped bar chart (#clusterComparisonChart).
 const clusterComparisonRows = [
-  { name: "Engineering", students: "38,240", engagement: 84, atRisk: 398, avgScore: 82, coPo: 88 },
-  { name: "Management", students: "14,760", engagement: 70, atRisk: 520, avgScore: 68, coPo: 70 },
-  { name: "Sciences", students: "7,450", engagement: 80, atRisk: 285, avgScore: 78, coPo: 82 },
-  { name: "Liberal Arts", students: "5,680", engagement: 76, atRisk: 275, avgScore: 74, coPo: 74 },
+  { name: "Engineering", students: "38,240", assignment: 88, pendingAssignment: 398, quiz: 82, pendingQuiz: 126, surpriseTest: 76, pendingSurpriseTest: 84 },
+  { name: "Management", students: "14,760", assignment: 72, pendingAssignment: 520, quiz: 68, pendingQuiz: 172, surpriseTest: 64, pendingSurpriseTest: 121 },
+  { name: "Sciences", students: "7,450", assignment: 84, pendingAssignment: 285, quiz: 78, pendingQuiz: 94, surpriseTest: 82, pendingSurpriseTest: 61 },
+  { name: "Liberal Arts", students: "5,680", assignment: 74, pendingAssignment: 275, quiz: 74, pendingQuiz: 88, surpriseTest: 70, pendingSurpriseTest: 76 },
 ];
 
-// DATA: Metrics shown as bars in the Cluster Comparison Chart.
-const clusterComparisonSeries = [
-  { key: "engagement", label: "Engagement", color: "#12c6b2" },
-  { key: "avgScore", label: "Avg Score", color: "#1f87ff" },
-  { key: "coPo", label: "CO-PO", color: "#f59e0b" },
-];
+// Note: chartSeries is now dynamically defined per filter state inside renderClusterComparisonChart.
 
 // DATA: Student Engagement Heatmap table (#heatmapTable).
 const heatmapRows = [
@@ -520,7 +515,7 @@ function renderDepartmentTable() {
       <td>${name}</td>
       <td>${students}</td>
       <td>${courses}</td>
-      <td><span class="progress"><span>${completion}%</span><span class="bar-track"><i class="bar-fill" style="width:${completion}%"></i></span></span></td>
+      <td><span class="progress"><span>${completion}</span><span class="bar-track"><i class="bar-fill" style="width:${completion}%"></i></span></span></td>
     `;
     body.appendChild(row);
   });
@@ -536,16 +531,19 @@ function renderClusterComparison() {
   if (count) count.textContent = `${clusterComparisonRows.length} clusters`;
 
   clusterComparisonRows.forEach((cluster) => {
-    const progressClass = cluster.coPo < 80 ? " warn" : "";
-    const engagementClass = cluster.engagement < 75 ? "metric-warning" : "metric-good";
+    const assignmentClass = cluster.assignment < 75 ? "metric-warning" : "metric-good";
+    const quizClass = cluster.quiz < 75 ? "metric-warning" : "metric-good";
+    const surpriseTestClass = cluster.surpriseTest < 75 ? "metric-warning" : "metric-good";
     const row = document.createElement("tr");
     row.innerHTML = `
       <td>${cluster.name}</td>
       <td>${cluster.students}</td>
-      <td class="${engagementClass}">${cluster.engagement}%</td>
-      <td class="metric-risk">${cluster.atRisk}</td>
-      <td>${cluster.avgScore}%</td>
-      <td><span class="comparison-progress${progressClass}"><i style="width: ${cluster.coPo}%"></i></span>${cluster.coPo}%</td>
+      <td class="${assignmentClass}">${cluster.assignment}</td>
+      <td class="metric-risk">${cluster.pendingAssignment}</td>
+      <td class="${quizClass}">${cluster.quiz}</td>
+      <td class="metric-risk">${cluster.pendingQuiz}</td>
+      <td class="${surpriseTestClass}">${cluster.surpriseTest}</td>
+      <td class="metric-risk">${cluster.pendingSurpriseTest}</td>
     `;
     body.appendChild(row);
   });
@@ -553,47 +551,117 @@ function renderClusterComparison() {
   renderClusterComparisonChart();
 }
 
-// Renderer: Cluster Comparison grouped bar chart (#clusterComparisonChart), using clusterComparisonRows and clusterComparisonSeries.
+// Renderer: Cluster Comparison horizontal grouped bar chart (#clusterComparisonChart).
 function renderClusterComparisonChart() {
   const svg = $("#clusterComparisonChart");
   if (!svg) return;
 
   svg.replaceChildren();
   const chartRows = clusterComparisonRows;
-  const chartSeries = clusterComparisonSeries;
+  const filterSelect = $("#chartMetricFilter");
+  const filterVal = filterSelect ? filterSelect.value : "completed";
+
+  const allSeries = {
+    assignment: { key: "assignment", label: "Assignment", color: "#1f87ff" },
+    pendingAssignment: { key: "pendingAssignment", label: "Pending Assignment", color: "#ff3f5f" },
+    quiz: { key: "quiz", label: "Quiz", color: "#f59e0b" },
+    pendingQuiz: { key: "pendingQuiz", label: "Pending Quiz", color: "#ff781b" },
+    surpriseTest: { key: "surpriseTest", label: "Surprise Test", color: "#914ff0" },
+    pendingSurpriseTest: { key: "pendingSurpriseTest", label: "PE (Pending Test)", color: "#954de6" }
+  };
+
+  let chartSeries = [];
+  if (filterVal === "completed") {
+    chartSeries = [allSeries.assignment, allSeries.quiz, allSeries.surpriseTest];
+  } else if (filterVal === "pending") {
+    chartSeries = [allSeries.pendingAssignment, allSeries.pendingQuiz, allSeries.pendingSurpriseTest];
+  } else if (filterVal === "all") {
+    chartSeries = [
+      allSeries.assignment, allSeries.pendingAssignment,
+      allSeries.quiz, allSeries.pendingQuiz,
+      allSeries.surpriseTest, allSeries.pendingSurpriseTest
+    ];
+  } else if (filterVal === "assignment") {
+    chartSeries = [allSeries.assignment, allSeries.pendingAssignment];
+  } else if (filterVal === "quiz") {
+    chartSeries = [allSeries.quiz, allSeries.pendingQuiz];
+  } else if (filterVal === "surpriseTest") {
+    chartSeries = [allSeries.surpriseTest, allSeries.pendingSurpriseTest];
+  } else if (filterVal.startsWith("single_")) {
+    const key = filterVal.replace("single_", "");
+    if (allSeries[key]) {
+      chartSeries = [allSeries[key]];
+    }
+  }
+
   if (!chartRows.length || !chartSeries.length) return;
   const frame = svg.closest(".comparison-chart-frame");
   const tooltip = $("#clusterComparisonTooltip");
   const width = Math.max(620, Math.round(frame?.clientWidth || 720));
-  const height = Math.max(360, Math.round(frame?.clientHeight || 430));
+  const height = 350;
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
-  const padding = { top: 48, right: 22, bottom: 52, left: 52 };
+  const padding = { top: 48, right: 28, bottom: 32, left: 116 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
-  const yTicks = Array.from({ length: 11 }, (_, index) => index * 10);
-  const groupWidth = chartWidth / chartRows.length;
-  const barGap = 8;
-  const barWidth = Math.min(34, Math.max(14, (groupWidth * 0.58 - barGap * (chartSeries.length - 1)) / chartSeries.length));
-  const groupBarsWidth = chartSeries.length * barWidth + (chartSeries.length - 1) * barGap;
-  const yFor = (value) => padding.top + chartHeight - (value / 100) * chartHeight;
+  const maxValue = Math.max(...chartRows.flatMap((row) => chartSeries.map((series) => row[series.key])));
+
+  let chartMax;
+  if (maxValue <= 100) {
+    chartMax = Math.max(10, Math.ceil(maxValue / 10) * 10);
+  } else {
+    chartMax = Math.max(100, Math.ceil(maxValue / 100) * 100);
+  }
+
+  const xTicks = Array.from({ length: 6 }, (_, index) => Math.round((chartMax / 5) * index));
+  const groupHeight = chartHeight / chartRows.length;
+
+  // Custom thicker bars and gaps dynamically adjusted to match screen and fit nicely
+  let barHeight = 14;
+  let barGap = 4;
+  if (chartSeries.length > 3) {
+    barHeight = 8;
+    barGap = 2;
+  } else if (chartSeries.length === 1) {
+    barHeight = 18;
+    barGap = 0;
+  }
+  const groupBarsHeight = chartSeries.length * barHeight + (chartSeries.length - 1) * barGap;
+  const xFor = (value) => padding.left + (value / chartMax) * chartWidth;
   let activeValue = null;
 
+  // Center the legend horizontally using dynamic measurement
   const legend = svgEl("g", { class: "cluster-chart-legend" });
-  let legendX = padding.left;
-  chartSeries.forEach((series) => {
-    legend.appendChild(svgEl("rect", { x: legendX, y: 13, width: 11, height: 11, rx: 2, fill: series.color }));
-    const label = svgEl("text", { x: legendX + 18, y: 23, class: "cluster-chart-legend-label" });
+  let legendX = 0;
+  chartSeries.forEach((series, seriesIndex) => {
+    const itemGroup = svgEl("g");
+    itemGroup.appendChild(svgEl("rect", { x: legendX, y: 12, width: 11, height: 11, rx: 2, fill: series.color }));
+    const label = svgEl("text", { x: legendX + 18, y: 22, class: "cluster-chart-legend-label" });
     label.textContent = series.label;
-    legend.appendChild(label);
-    legendX += 102;
+    itemGroup.appendChild(label);
+    legend.appendChild(itemGroup);
+    if (seriesIndex < chartSeries.length - 1) {
+      const approxWidth = 11 + 7 + (series.label.length * 7.5) + 24;
+      legendX += approxWidth;
+    }
   });
   svg.appendChild(legend);
 
-  yTicks.forEach((tick) => {
-    const y = yFor(tick);
-    svg.appendChild(svgEl("line", { x1: padding.left, x2: width - padding.right, y1: y, y2: y, class: "cluster-chart-grid" }));
-    const text = svgEl("text", { x: 10, y: y + 4, class: "cluster-chart-label" });
+  requestAnimationFrame(() => {
+    try {
+      const bbox = legend.getBBox();
+      const xTranslate = (width - bbox.width) / 2 - bbox.x;
+      legend.setAttribute("transform", `translate(${xTranslate}, 0)`);
+    } catch (e) {
+      const fallbackX = (width - 280) / 2;
+      legend.setAttribute("transform", `translate(${fallbackX}, 0)`);
+    }
+  });
+
+  xTicks.forEach((tick) => {
+    const x = xFor(tick);
+    svg.appendChild(svgEl("line", { x1: x, x2: x, y1: padding.top, y2: padding.top + chartHeight, class: "cluster-chart-grid vertical" }));
+    const text = svgEl("text", { x, y: padding.top + chartHeight + 23, "text-anchor": "middle", class: "cluster-chart-label" });
     text.textContent = tick;
     svg.appendChild(text);
   });
@@ -601,13 +669,25 @@ function renderClusterComparisonChart() {
   svg.appendChild(svgEl("line", { x1: padding.left, x2: width - padding.right, y1: padding.top + chartHeight, y2: padding.top + chartHeight, class: "cluster-chart-axis" }));
 
   chartRows.forEach((row, index) => {
-    const groupX = padding.left + index * groupWidth;
-    const centerX = groupX + groupWidth / 2;
-    svg.appendChild(svgEl("line", { x1: centerX, x2: centerX, y1: padding.top, y2: height - padding.bottom, class: "cluster-chart-grid vertical" }));
+    const groupY = padding.top + index * groupHeight;
+    const centerY = groupY + groupHeight / 2;
+    
+    // Horizontal separator line between categories (skip for the last one)
+    if (index < chartRows.length - 1) {
+      const dividerY = groupY + groupHeight;
+      svg.appendChild(svgEl("line", {
+        x1: padding.left,
+        x2: width - padding.right,
+        y1: dividerY,
+        y2: dividerY,
+        class: "cluster-chart-grid"
+      }));
+    }
+
     const label = svgEl("text", {
-      x: centerX,
-      y: padding.top + chartHeight + 31,
-      "text-anchor": "middle",
+      x: padding.left - 14,
+      y: centerY + 5,
+      "text-anchor": "end",
       class: "cluster-chart-label cluster-chart-x-label",
     });
     label.textContent = row.name;
@@ -615,19 +695,18 @@ function renderClusterComparisonChart() {
 
     chartSeries.forEach((series, seriesIndex) => {
       const value = row[series.key];
-      const barX = groupX + (groupWidth - groupBarsWidth) / 2 + seriesIndex * (barWidth + barGap);
-      const barY = yFor(value);
+      const barY = groupY + (groupHeight - groupBarsHeight) / 2 + seriesIndex * (barHeight + barGap);
       const rect = svgEl("rect", {
-        x: barX,
+        x: padding.left,
         y: barY,
-        width: barWidth,
-        height: Math.max(1, padding.top + chartHeight - barY),
-        rx: 3,
+        width: Math.max(2, xFor(value) - padding.left),
+        height: barHeight,
+        rx: barHeight / 2, // Pill shape
         fill: series.color,
         class: "cluster-bar",
       });
       rect.appendChild(svgEl("title"));
-      rect.querySelector("title").textContent = `${row.name} ${series.label}: ${value}%`;
+      rect.querySelector("title").textContent = `${row.name} ${series.label}: ${value}`;
       svg.appendChild(rect);
     });
   });
@@ -647,27 +726,27 @@ function renderClusterComparisonChart() {
     const values = chartSeries.map((series) => row[series.key]);
     activeValue = values.reduce((closest, value) => (
       Math.abs(value - activeValue) < Math.abs(closest - activeValue) ? value : closest
-    ), values[1]);
+    ), values[0]);
 
     overlay.replaceChildren();
-    const groupX = padding.left + index * groupWidth;
-    const centerX = groupX + groupWidth / 2;
-    const y = yFor(activeValue);
+    const groupY = padding.top + index * groupHeight;
+    const centerY = groupY + groupHeight / 2;
+    const x = xFor(activeValue);
 
     overlay.appendChild(svgEl("rect", {
-      x: groupX + 8,
-      y: padding.top,
-      width: groupWidth - 16,
-      height: chartHeight,
+      x: padding.left,
+      y: groupY + 4,
+      width: chartWidth,
+      height: groupHeight - 8,
       class: "cluster-chart-band",
     }));
-    overlay.appendChild(svgEl("line", { x1: centerX, x2: centerX, y1: padding.top, y2: padding.top + chartHeight, class: "cluster-chart-crosshair" }));
-    overlay.appendChild(svgEl("line", { x1: padding.left, x2: width - padding.right, y1: y, y2: y, class: "cluster-chart-crosshair" }));
-    overlay.appendChild(svgEl("rect", { x: 0, y: y - 12, width: 34, height: 24, rx: 5, class: "cluster-chart-value-box" }));
-    const valueLabel = svgEl("text", { x: 17, y: y + 5, "text-anchor": "middle", class: "cluster-chart-value-label" });
+    overlay.appendChild(svgEl("line", { x1: x, x2: x, y1: padding.top, y2: padding.top + chartHeight, class: "cluster-chart-crosshair" }));
+    overlay.appendChild(svgEl("line", { x1: padding.left, x2: width - padding.right, y1: centerY, y2: centerY, class: "cluster-chart-crosshair" }));
+    overlay.appendChild(svgEl("rect", { x: x - 17, y: padding.top + chartHeight + 7, width: 34, height: 22, rx: 5, class: "cluster-chart-value-box" }));
+    const valueLabel = svgEl("text", { x, y: padding.top + chartHeight + 22, "text-anchor": "middle", class: "cluster-chart-value-label" });
     valueLabel.textContent = activeValue;
     overlay.appendChild(valueLabel);
-    const bottomLabel = svgEl("text", { x: centerX, y: padding.top + chartHeight + 31, "text-anchor": "middle", class: "cluster-chart-hover-label" });
+    const bottomLabel = svgEl("text", { x: padding.left - 14, y: centerY + 5, "text-anchor": "end", class: "cluster-chart-hover-label" });
     bottomLabel.textContent = row.name;
     overlay.appendChild(bottomLabel);
 
@@ -675,7 +754,7 @@ function renderClusterComparisonChart() {
       tooltip.innerHTML = `
         <strong>${row.name}</strong>
         ${chartSeries.map((series) => `
-          <span><i style="border-color:${series.color}; background:${series.color}"></i><b>${series.label}:</b> ${row[series.key]}%</span>
+          <span><i style="border-color:${series.color}; background:${series.color}"></i><b>${series.label}:</b> ${row[series.key]}</span>
         `).join("")}
       `;
       const frameRect = frame.getBoundingClientRect();
@@ -691,8 +770,8 @@ function renderClusterComparisonChart() {
     const bounds = svg.getBoundingClientRect();
     const pointerX = ((event.clientX - bounds.left) / bounds.width) * width;
     const pointerY = ((event.clientY - bounds.top) / bounds.height) * height;
-    activeValue = Math.round(Math.max(0, Math.min(100, ((padding.top + chartHeight - pointerY) / chartHeight) * 100)));
-    const index = Math.max(0, Math.min(chartRows.length - 1, Math.floor((pointerX - padding.left) / groupWidth)));
+    activeValue = Math.round(Math.max(0, Math.min(chartMax, ((pointerX - padding.left) / chartWidth) * chartMax)));
+    const index = Math.max(0, Math.min(chartRows.length - 1, Math.floor((pointerY - padding.top) / groupHeight)));
     if (pointerX < padding.left || pointerX > width - padding.right || pointerY < padding.top || pointerY > padding.top + chartHeight) {
       clearHover();
       return;
@@ -702,7 +781,7 @@ function renderClusterComparisonChart() {
   svg.onmouseleave = clearHover;
 }
 
-// Heatmap cell color helper: maps percentage values to RYG classes.
+// Heatmap cell color helper: maps numeric values to RYG classes.
 function cellClass(value, partialThreshold = 70) {
   if (value === null) return "cell-empty";
   if (value >= 70) return "cell-high";
@@ -726,7 +805,7 @@ function renderSimpleMatrix(tableSelector, columns, rows) {
         cell.textContent = value;
       } else {
         const className = cellClass(value, 40);
-        cell.innerHTML = `<span class="heat-cell ${className}">${value === null ? "-" : `${value}%`}</span>`;
+        cell.innerHTML = `<span class="heat-cell ${className}">${value === null ? "-" : value}</span>`;
       }
       row.appendChild(cell);
     });
@@ -762,7 +841,7 @@ function renderStackedBarChart() {
       ${stackedActivitySeries
         .map(
           (series, index) => `
-            <span><i style="background:${series.color}"></i><b>${series.label}:</b><em>${row.values[index]}%</em></span>
+            <span><i style="background:${series.color}"></i><b>${series.label}:</b><em>${row.values[index]}</em></span>
           `
         )
         .join("")}
@@ -996,6 +1075,15 @@ function initTheme() {
   toggleBtn?.addEventListener("click", () => setDark(!body.classList.contains("dark-theme")));
 }
 
+function initChartFilter() {
+  const filter = $("#chartMetricFilter");
+  if (filter) {
+    filter.addEventListener("change", () => {
+      renderClusterComparisonChart();
+    });
+  }
+}
+
 // Page startup: load the shared navbar, enhance controls, apply filters, then render visuals.
 async function initDashboard() {
   await loadNavbar();
@@ -1004,6 +1092,7 @@ async function initDashboard() {
   enhanceFilterDropdowns();
   initFilters();
   initActiveFilterChips();
+  initChartFilter();
   renderLineChart();
   renderDepartmentTable();
   renderClusterComparison();

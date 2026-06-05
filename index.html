@@ -64,9 +64,6 @@
       <symbol id="icon-forum" viewBox="0 0 24 24">
         <path d="M5 5h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-5 4v-4H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z" />
       </symbol>
-      <symbol id="icon-percent" viewBox="0 0 24 24">
-        <path d="m19 5-14 14M7.5 8.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm9 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
-      </symbol>
       <symbol id="icon-flask" viewBox="0 0 24 24">
         <path d="M9 3h6M10 3v6l-5.5 9.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3M8 15h8" />
       </symbol>
@@ -223,7 +220,7 @@
               <button class="small-select">View All</button>
             </div>
             <table>
-              <thead><tr><th>Department</th><th>Students</th><th>Courses</th><th>Completion Rate</th></tr></thead>
+              <thead><tr><th>Department</th><th>Students</th><th>Courses</th><th>Completion</th></tr></thead>
               <tbody id="departmentRows"></tbody>
             </table>
           </article>
@@ -253,9 +250,9 @@
               <table class="heatmap" id="heatmapTable"></table>
             </div>
             <div class="status-legend">
-              <span><i class="dot high"></i>High &ge;70%</span>
-              <span><i class="dot partial"></i>Partial 40-69%</span>
-              <span><i class="dot low"></i>Low &lt;40%</span>
+              <span><i class="dot high"></i>High &ge;70</span>
+              <span><i class="dot partial"></i>Partial 40-69</span>
+              <span><i class="dot low"></i>Low &lt;40</span>
             </div>
           </article>
 
@@ -286,12 +283,14 @@
               <table class="comparison-table">
                 <thead>
                   <tr>
-                    <th>Name ↕</th>
+                    <th>Cluster ↕</th>
                     <th>Students ↕</th>
-                    <th>Engagement ↕</th>
-                    <th>At-Risk ↕</th>
-                    <th>Avg Score ↕</th>
-                    <th>CO-PO Att. ↕</th>
+                    <th>Assignment ↕</th>
+                    <th>Pending Assignment ↕</th>
+                    <th>Quiz ↕</th>
+                    <th>Pending Quiz ↕</th>
+                    <th>Surprise Test ↕</th>
+                    <th>PE ↕</th>
                   </tr>
                 </thead>
                 <tbody id="clusterComparisonRows"></tbody>
@@ -305,6 +304,28 @@
               <div class="panel-title">
                 <span class="panel-icon"><svg><use href="#icon-chart"></use></svg></span>
                 <h2>Cluster Comparison Chart</h2>
+              </div>
+              <div class="panel-actions">
+                <select id="chartMetricFilter" class="small-select" aria-label="Choose chart metric view">
+                  <optgroup label="Overview Profiles">
+                    <option value="completed" selected>Completed Scores</option>
+                    <option value="pending">Pending Tasks</option>
+                    <option value="all">All Metrics</option>
+                  </optgroup>
+                  <optgroup label="Compare Completed vs Pending">
+                    <option value="assignment">Assignment vs Pending</option>
+                    <option value="quiz">Quiz vs Pending</option>
+                    <option value="surpriseTest">Surprise Test vs PE</option>
+                  </optgroup>
+                  <optgroup label="Individual Metrics">
+                    <option value="single_assignment">Assignment (Completed)</option>
+                    <option value="single_pendingAssignment">Pending Assignment</option>
+                    <option value="single_quiz">Quiz (Completed)</option>
+                    <option value="single_pendingQuiz">Pending Quiz</option>
+                    <option value="single_surpriseTest">Surprise Test (Completed)</option>
+                    <option value="single_pendingSurpriseTest">PE (Pending Test)</option>
+                  </optgroup>
+                </select>
               </div>
             </div>
             <div class="comparison-chart-frame">
