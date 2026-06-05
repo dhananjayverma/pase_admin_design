@@ -654,6 +654,8 @@ function renderClusterComparison() {
     `;
     body.appendChild(row);
   });
+
+  renderClusterComparisonChart();
 }
 
 function renderClusterComparisonChart() {
@@ -661,73 +663,147 @@ function renderClusterComparisonChart() {
   if (!svg) return;
 
   svg.replaceChildren();
+  const chartRows = clusterComparisonRows;
+  const chartSeries = clusterComparisonSeries;
+  if (!chartRows.length || !chartSeries.length) return;
   const frame = svg.closest(".comparison-chart-frame");
-  const width = Math.max(420, Math.round(frame?.clientWidth || 680));
-  const height = Math.max(260, Math.round(frame?.clientHeight || 430));
+  const tooltip = $("#clusterComparisonTooltip");
+  const width = Math.max(620, Math.round(frame?.clientWidth || 720));
+  const height = Math.max(360, Math.round(frame?.clientHeight || 430));
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
-  const padding = { top: 22, right: 24, bottom: 58, left: 48 };
+  const padding = { top: 48, right: 22, bottom: 52, left: 52 };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
-  const yTicks = [0, 25, 50, 75, 100];
-  const xFor = (index) => padding.left + (index / Math.max(clusterComparisonRows.length - 1, 1)) * chartWidth;
+  const yTicks = Array.from({ length: 11 }, (_, index) => index * 10);
+  const groupWidth = chartWidth / chartRows.length;
+  const barGap = 8;
+  const barWidth = Math.min(34, Math.max(14, (groupWidth * 0.58 - barGap * (chartSeries.length - 1)) / chartSeries.length));
+  const groupBarsWidth = chartSeries.length * barWidth + (chartSeries.length - 1) * barGap;
   const yFor = (value) => padding.top + chartHeight - (value / 100) * chartHeight;
+  let activeValue = null;
+
+  const legend = svgEl("g", { class: "cluster-chart-legend" });
+  let legendX = padding.left;
+  chartSeries.forEach((series) => {
+    legend.appendChild(svgEl("rect", { x: legendX, y: 13, width: 11, height: 11, rx: 2, fill: series.color }));
+    const label = svgEl("text", { x: legendX + 18, y: 23, class: "cluster-chart-legend-label" });
+    label.textContent = series.label;
+    legend.appendChild(label);
+    legendX += 102;
+  });
+  svg.appendChild(legend);
 
   yTicks.forEach((tick) => {
     const y = yFor(tick);
     svg.appendChild(svgEl("line", { x1: padding.left, x2: width - padding.right, y1: y, y2: y, class: "cluster-chart-grid" }));
     const text = svgEl("text", { x: 10, y: y + 4, class: "cluster-chart-label" });
-    text.textContent = `${tick}%`;
+    text.textContent = tick;
     svg.appendChild(text);
   });
+  svg.appendChild(svgEl("line", { x1: padding.left, x2: padding.left, y1: padding.top, y2: padding.top + chartHeight, class: "cluster-chart-axis" }));
+  svg.appendChild(svgEl("line", { x1: padding.left, x2: width - padding.right, y1: padding.top + chartHeight, y2: padding.top + chartHeight, class: "cluster-chart-axis" }));
 
-  clusterComparisonRows.forEach((cluster, index) => {
-    const x = xFor(index);
-    svg.appendChild(svgEl("line", { x1: x, x2: x, y1: padding.top, y2: height - padding.bottom, class: "cluster-chart-grid vertical" }));
-    const label = svgEl("text", { x, y: height - 24, "text-anchor": "middle", class: "cluster-chart-label cluster-chart-x-label" });
-    const words = cluster.name.split(" ");
-    words.forEach((word, wordIndex) => {
-      const tspan = svgEl("tspan", { x, dy: wordIndex === 0 ? 0 : 13 });
-      tspan.textContent = word;
-      label.appendChild(tspan);
+  chartRows.forEach((row, index) => {
+    const groupX = padding.left + index * groupWidth;
+    const centerX = groupX + groupWidth / 2;
+    svg.appendChild(svgEl("line", { x1: centerX, x2: centerX, y1: padding.top, y2: height - padding.bottom, class: "cluster-chart-grid vertical" }));
+    const label = svgEl("text", {
+      x: centerX,
+      y: padding.top + chartHeight + 31,
+      "text-anchor": "middle",
+      class: "cluster-chart-label cluster-chart-x-label",
     });
+    label.textContent = row.name;
     svg.appendChild(label);
-  });
 
-  clusterComparisonSeries.forEach((series) => {
-    const points = clusterComparisonRows.map((cluster, index) => ({
-      x: xFor(index),
-      y: yFor(cluster[series.key]),
-      value: cluster[series.key],
-      name: cluster.name,
-    }));
-
-    const pathData = points.reduce((path, point, pointIndex) => {
-      if (pointIndex === 0) return `M ${point.x} ${point.y}`;
-      const previous = points[pointIndex - 1];
-      const controlX = (previous.x + point.x) / 2;
-      return `${path} C ${controlX} ${previous.y}, ${controlX} ${point.y}, ${point.x} ${point.y}`;
-    }, "");
-
-    svg.appendChild(svgEl("path", { d: pathData, fill: "none", stroke: series.color, "stroke-width": 3, "stroke-linecap": "round" }));
-
-    points.forEach((point) => {
-      const dot = svgEl("circle", { cx: point.x, cy: point.y, r: 4, fill: series.color, class: "cluster-chart-dot" });
-      dot.appendChild(svgEl("title"));
-      dot.querySelector("title").textContent = `${point.name} ${series.label}: ${point.value}%`;
-      svg.appendChild(dot);
+    chartSeries.forEach((series, seriesIndex) => {
+      const value = row[series.key];
+      const barX = groupX + (groupWidth - groupBarsWidth) / 2 + seriesIndex * (barWidth + barGap);
+      const barY = yFor(value);
+      const rect = svgEl("rect", {
+        x: barX,
+        y: barY,
+        width: barWidth,
+        height: Math.max(1, padding.top + chartHeight - barY),
+        rx: 3,
+        fill: series.color,
+        class: "cluster-bar",
+      });
+      rect.appendChild(svgEl("title"));
+      rect.querySelector("title").textContent = `${row.name} ${series.label}: ${value}%`;
+      svg.appendChild(rect);
     });
   });
 
-  const legend = svgEl("g", { class: "cluster-chart-legend" });
-  clusterComparisonSeries.forEach((series, index) => {
-    const x = padding.left + index * 112;
-    legend.appendChild(svgEl("line", { x1: x, x2: x + 20, y1: 12, y2: 12, stroke: series.color, "stroke-width": 3, "stroke-linecap": "round" }));
-    const label = svgEl("text", { x: x + 28, y: 16, class: "cluster-chart-label" });
-    label.textContent = series.label;
-    legend.appendChild(label);
-  });
-  svg.appendChild(legend);
+  const overlay = svgEl("g", { class: "cluster-chart-overlay" });
+  svg.appendChild(overlay);
+
+  const clearHover = () => {
+    activeValue = null;
+    overlay.replaceChildren();
+    if (tooltip) tooltip.classList.remove("is-visible");
+  };
+
+  const drawHover = (index, pointerX, pointerY) => {
+    const row = chartRows[index];
+    if (!row) return;
+    const values = chartSeries.map((series) => row[series.key]);
+    activeValue = values.reduce((closest, value) => (
+      Math.abs(value - activeValue) < Math.abs(closest - activeValue) ? value : closest
+    ), values[1]);
+
+    overlay.replaceChildren();
+    const groupX = padding.left + index * groupWidth;
+    const centerX = groupX + groupWidth / 2;
+    const y = yFor(activeValue);
+
+    overlay.appendChild(svgEl("rect", {
+      x: groupX + 8,
+      y: padding.top,
+      width: groupWidth - 16,
+      height: chartHeight,
+      class: "cluster-chart-band",
+    }));
+    overlay.appendChild(svgEl("line", { x1: centerX, x2: centerX, y1: padding.top, y2: padding.top + chartHeight, class: "cluster-chart-crosshair" }));
+    overlay.appendChild(svgEl("line", { x1: padding.left, x2: width - padding.right, y1: y, y2: y, class: "cluster-chart-crosshair" }));
+    overlay.appendChild(svgEl("rect", { x: 0, y: y - 12, width: 34, height: 24, rx: 5, class: "cluster-chart-value-box" }));
+    const valueLabel = svgEl("text", { x: 17, y: y + 5, "text-anchor": "middle", class: "cluster-chart-value-label" });
+    valueLabel.textContent = activeValue;
+    overlay.appendChild(valueLabel);
+    const bottomLabel = svgEl("text", { x: centerX, y: padding.top + chartHeight + 31, "text-anchor": "middle", class: "cluster-chart-hover-label" });
+    bottomLabel.textContent = row.name;
+    overlay.appendChild(bottomLabel);
+
+    if (tooltip) {
+      tooltip.innerHTML = `
+        <strong>${row.name}</strong>
+        ${chartSeries.map((series) => `
+          <span><i style="border-color:${series.color}; background:${series.color}"></i><b>${series.label}:</b> ${row[series.key]}%</span>
+        `).join("")}
+      `;
+      const frameRect = frame.getBoundingClientRect();
+      const tooltipX = Math.min(Math.max(pointerX + 14, 12), frameRect.width - 176);
+      const tooltipY = Math.min(Math.max(pointerY - 92, 12), frameRect.height - 128);
+      tooltip.style.left = `${tooltipX}px`;
+      tooltip.style.top = `${tooltipY}px`;
+      tooltip.classList.add("is-visible");
+    }
+  };
+
+  svg.onmousemove = (event) => {
+    const bounds = svg.getBoundingClientRect();
+    const pointerX = ((event.clientX - bounds.left) / bounds.width) * width;
+    const pointerY = ((event.clientY - bounds.top) / bounds.height) * height;
+    activeValue = Math.round(Math.max(0, Math.min(100, ((padding.top + chartHeight - pointerY) / chartHeight) * 100)));
+    const index = Math.max(0, Math.min(chartRows.length - 1, Math.floor((pointerX - padding.left) / groupWidth)));
+    if (pointerX < padding.left || pointerX > width - padding.right || pointerY < padding.top || pointerY > padding.top + chartHeight) {
+      clearHover();
+      return;
+    }
+    drawHover(index, event.clientX - frame.getBoundingClientRect().left, event.clientY - frame.getBoundingClientRect().top);
+  };
+  svg.onmouseleave = clearHover;
 }
 
 // Heatmap cell color helper: maps percentage values to RYG classes.
@@ -1035,7 +1111,6 @@ async function initDashboard() {
   renderLineChart();
   renderDepartmentTable();
   renderClusterComparison();
-  renderClusterComparisonChart();
   renderSimpleMatrix("#heatmapTable", heatmapColumns, heatmapRows);
   renderStackedBarChart();
 }
