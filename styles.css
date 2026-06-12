@@ -79,54 +79,79 @@ svg {
 .welcome-panel {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 470px 168px;
+  grid-template-columns: minmax(320px, 1fr) auto;
   align-items: center;
-  min-height: 78px;
+  gap: 24px;
+  min-height: 178px;
   overflow: hidden;
-  padding: 17px 22px;
+  padding: 28px 30px;
   background:
-    linear-gradient(90deg, #fff4f6 0%, #fff 32%, rgba(255, 255, 255, 0.62) 72%, #fff4f6 100%),
-    var(--surface);
+    linear-gradient(180deg, rgba(8, 16, 30, 0.2) 0%, rgba(8, 16, 30, 0.34) 100%),
+    url("university.jpg") center 58% / cover;
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 22px 52px rgba(21, 33, 58, 0.16);
+}
+
+.welcome-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, #d71920 0%, #ffffff 38%, #2557a7 68%, #2aa876 100%);
+  opacity: 0.9;
+}
+
+.welcome-copy {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
 }
 
 .welcome-panel h1 {
-  margin: 0 0 5px;
-  font-size: 23px;
-  line-height: 1.05;
+  margin: 0 0 7px;
+  color: #ffffff;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1.08;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.42);
 }
 
 .welcome-panel p,
 .section-head p {
   margin: 0;
-  color: #68738b;
+  color: #5f6f8c;
   font-weight: 600;
 }
 
-.campus-strip {
-  justify-self: stretch;
-  height: 60px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0) 0 58%, rgba(255, 255, 255, 0.92) 100%),
-    url("https://images.unsplash.com/photo-1576495199011-eb94736d05d6?auto=format&fit=crop&w=900&q=80") center 48% / cover;
-  filter: saturate(1.18);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+.welcome-panel p {
+  color: rgba(255, 255, 255, 0.84);
+  max-width: 48ch;
 }
 
 .date-card {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-self: end;
   gap: 10px;
   min-width: 156px;
-  padding: 11px 14px;
-  background: rgba(255, 255, 255, 0.86);
-  border: 1px solid var(--line);
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.54);
   border-radius: var(--radius);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(12px);
 }
 
 .date-card svg {
-  width: 16px;
-  height: 16px;
+  box-sizing: content-box;
+  width: 17px;
+  height: 17px;
+  padding: 8px;
+  color: #2557a7;
+  background: #eef5ff;
+  border-radius: 8px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
@@ -137,6 +162,11 @@ svg {
 .date-card strong,
 .date-card small {
   display: block;
+}
+
+.date-card strong {
+  color: #172033;
+  font-size: 14px;
 }
 
 .date-card small {
@@ -2965,19 +2995,10 @@ th {
 
   .welcome-panel {
     grid-template-columns: 1fr;
-    gap: 14px;
+    gap: 16px;
     min-height: 0;
-    padding: 18px;
-  }
-
-  .campus-strip,
-  .date-card {
-    margin-top: 0;
-  }
-
-  .campus-strip {
-    height: 86px;
-    mask-image: linear-gradient(90deg, transparent 0%, #000 8%, #000 92%, transparent 100%);
+    padding: 24px;
+    background-position: center 58%;
   }
 
   .date-card {
@@ -3052,11 +3073,15 @@ th {
   }
 
   .welcome-panel {
-    padding: 16px;
+    min-height: 220px;
+    padding: 22px;
+    background:
+      linear-gradient(180deg, rgba(8, 16, 30, 0.28) 0%, rgba(8, 16, 30, 0.42) 100%),
+      url("university.jpg") center 58% / cover;
   }
 
   .welcome-panel h1 {
-    font-size: clamp(25px, 8vw, 38px);
+    font-size: clamp(25px, 8vw, 34px);
     line-height: 1.08;
   }
 
@@ -3064,12 +3089,6 @@ th {
     max-width: 34ch;
     font-size: 16px;
     line-height: 1.32;
-  }
-
-  .campus-strip {
-    height: 96px;
-    border-radius: 10px;
-    mask-image: linear-gradient(180deg, #000 0 72%, transparent 100%);
   }
 
   .date-card {
@@ -3364,10 +3383,6 @@ th {
 
   .welcome-panel p {
     font-size: 14px;
-  }
-
-  .campus-strip {
-    height: 78px;
   }
 
   .date-card {
@@ -3681,8 +3696,8 @@ body.dark-theme .stacked-panel {
 
 body.dark-theme .welcome-panel {
   background:
-    linear-gradient(90deg, #120c1a 0%, #0a0a0c 32%, rgba(10, 10, 12, 0.62) 72%, #120c1a 100%),
-    var(--surface);
+    linear-gradient(180deg, rgba(5, 10, 18, 0.34), rgba(5, 10, 18, 0.48)),
+    url("university.jpg") center 58% / cover;
 }
 
 body.dark-theme .table-panel {
